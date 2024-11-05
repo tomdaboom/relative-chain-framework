@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage{graphicx} % Required for inserting images
 
-\usepackage[a4paper, total={6.5in, 10.5in}]{geometry}
+\usepackage[a4paper, total={7in, 10.5in}]{geometry}
 \usepackage{hyperref}
 
 \usepackage{amsmath}
@@ -37,43 +37,63 @@
 
 \section{Introduction}
 
+We present a new framework of \emph{relative chains} for proving the termination of the union of two terminating rewrite systems. Our approach extends the dependency pair framework, introduced by Arts and Giesl in \cite{arts2000dependency}. We demonstrate how our framework can be used to prove the termination of functional programs augmented with equational hypotheses, and \emph{...}
 
 \section{Preliminaries}
 
+In this section, we discuss some mathematical preliminaries concerning term rewriting and reduction relations. The foundations of this field are explored in depth in \cite{baader1998terms}.
+
 \subsection{Term Rewrite Systems}
 
-We consider the setting of term rewriting systems over a \emph{signature} $T(\Sigma, V)$. A signature consists of a finite set of \emph{function symbols} $\Sigma$ and an infinite set of \emph{variables} $V$. $\Sigma$ is presumed to be partitioned into a set of \emph{defined functions} $\Sigma_{def}$ and \emph{constructors} $\Sigma_{con}$. Each $f \in \Sigma$ has an associated \emph{arity}, and $\Sigma^{(i)}$ denotes all the function symbols in $\Sigma$ with arity $i \in \mathbb{N}$.
+We consider the setting of term rewriting systems over a \emph{signature} $T(\Sigma, V)$. A signature consists of a finite set of \emph{function symbols} $\Sigma$ and an infinite set of \emph{variables} $V$. $\Sigma$ is presumed to be partitioned into a set of \emph{defined functions} $\Sigma_{def}$ and \emph{constructors} $\Sigma_{con}$. Each $f \in \Sigma$ has an associated natural number called its \emph{arity}, and $\Sigma^{(i)}$ denotes all the function symbols in $\Sigma$ with arity $i$.
 
 $T(\Sigma, V)$ is defined inductively as follows: \begin{enumerate}
     \item $\Sigma^{(0)} \subseteq T(\Sigma, V)$ and $V \subseteq T(\Sigma, V)$. 
     \item If $f \in \Sigma^{(n)}$, and $M_i \in T(\Sigma, V)$ for each $i \in [n]$, then $f(M_1, \cdots, M_n) \in T(\Sigma, V)$. 
 \end{enumerate}
 
-The recursive structure of $T(\Sigma, V)$ prompts us to think of terms in a TRS as \emph{syntax trees}. We define $Pos(M) \subseteq \mathbb{N}^*$ for each $M \in T(\Sigma, V)$ to be the set of positions in $M$'s syntax tree. The root of the tree has position $\epsilon$; and the $i$th child of a node at position $p$ has position $pi$. $M|_p$ denotes $M$'s subterm located at position $p$, and $M[N]_p$ denotes $M$ with its term at position $p$ replaced by $N \in T(\Sigma, V)$. 
+The recursive structure of $T(\Sigma, V)$ prompts us to think of terms in a TRS as \emph{syntax trees}. We define $Pos(M) \subseteq \mathbb{N}^*$ for each $M \in T(\Sigma, V)$ to be the set of positions in $M$'s syntax tree. The root of the tree has position $\epsilon$, and the $i$th child of a node at position $p$ has position $pi$. $M|_p$ the subterm of $M$ rooted at position $p$, and $M[N]_p$ denotes $M$ with its term at position $p$ replaced by $N \in T(\Sigma, V)$. Additionally, we define $Var(M)$ to be the set of variables appearing in a term.
 
 A \emph{(one-hole) context} $C[\cdot] : T(\Sigma, V) \rightarrow T(\Sigma, V)$ is a term with a hole $\circ$ at some position. $C[M]$ denotes the context $C[\cdot]$ with its hole replaced by the term $M$. A \emph{substitution} $\theta : X \rightarrow T(\Sigma, V)$ is a function mapping variables to terms, for which the set $dom(\theta) := \{ x ~|~ \theta(x) \neq x\}$ is finite. $M \theta$ denotes the term $M$ with each variable replaced by its $\theta$-image. 
 \\~\\
-A reduction system $(R, \rightarrow)$ consists of a set $R$ equipped with a binary relation $\rightarrow ~\subseteq R \times R$. A reduction is \emph{terminating} iff there exist no sequences $x_1x_2 \cdots \in R^\omega$ with $x_1 \rightarrow x_2 \rightarrow \cdots$. A reduction system over $T(\Sigma, V)$ is a \emph{term rewrite syste (TRS)} iff it is closed under contexts and substitutions (i.e. if $M \rightarrow N$, then $C[M\theta] \rightarrow C[N\theta]$ for all contexts $C[\cdot]$ and substitutions $\theta$). 
+A reduction system $(X, \rightarrow)$ consists of a set $X$ equipped with a binary relation $\rightarrow ~\subseteq X \times X$. A reduction is \emph{terminating} iff there exist no infinite sequences $x_1x_2 \cdots \in X^\omega$ with $x_1 \rightarrow x_2 \rightarrow \cdots$. $x \in X$ is a \emph{redux} of $\rightarrow$ iff $\exists y \in X : x \rightarrow y$. If $x$ is not a redux, we say that it is in \emph{$\rightarrow$-normal form}. A reduction system over $T(\Sigma, V)$ is a \emph{term rewrite syste (TRS)} iff it is closed under contexts and substitutions (i.e. if $M \rightarrow N$, then $C[M\theta] \rightarrow C[N\theta]$ for all contexts $C[\cdot]$ and substitutions $\theta$). 
 
-Here, we will consider TRSs defined by a set of oriented equations $R \subseteq T(\Sigma, V) \times T(\Sigma, V)$. For an equation $M \approx N \in R$, we have that $C[M\theta] \rightarrow_R C[N\theta]$ for all contexts $C[\cdot]$ and substitutions $\theta$. We say that an equation $M \approx N$ is \emph{stable} iff $M$ is headed by a defined function symbol. A TRS is stable iff all of its equations are stable.  
+Here, we will consider TRSs defined by a set of equations $R \subseteq T(\Sigma, V) \times T(\Sigma, V)$. Note that our equations are presumed to be \emph{oriented}, meaning that $M \approx N \in R$ does not imply that $N \approx M \in R$. We also assume that $Var(M) \supseteq Var(N)$ for each $M \approx N \in R$. For an equation $M \approx N \in R$, we define $\rightarrow_R$ to enforce $C[M\theta] \rightarrow_R C[N\theta]$ for all contexts $C[\cdot]$ and substitutions $\theta$. We say that an equation $M \approx N$ is \emph{stable} iff $M$ is headed by a defined function symbol. A TRS is stable iff all of its equations are stable.  
 
 
 \subsection{The Dependency Pair Framework}
 
-\begin{theorem}[\cite{arts2000dependency}]\label{thm:no_infinite_chains}
+The dependency pair framework \cite{arts2000dependency} allows us to analyse the interdependencies between functions more precisely than by simply analysing the rules of a TRS. A dependency pair of a TRS $R$ is written $\dpair{M}{N}_R \in T(\Sigma \cup \Sigma^\sharp, V)^2$. We define $\Sigma^\sharp$ such that, for each $f \in \Sigma$, we have $F \in \Sigma^\sharp$. These pairs are constructed as follows:
+\begin{definition}
+    Consider some TRS $R$, and assume that $f(s_1, \cdots, s_n) \approx C[g(s_1, \cdots, s_n)] \in R$ for some context $C[\cdot]$ and function symbols $f, g \in \Sigma_{def}$. This induces the \emph{dependency pair} $\dpair{F (s_1, \cdots, s_n)}{G(s_1, \cdots, s_n)}_R $, where $F, G \in \Sigma^\sharp$. $DP(R)$ is defined to be the set of all dependency pairs induced by $R$.
+\end{definition}
+The fact that each dependency pair is induced by exactly one equational constraint leads trivially to the following result:
+\begin{lemma} \label{thm:dep_pair_mod}
+    $DP(R_1 \cup R_2) = DP(R_1) \cup DP(R_2)$
+\end{lemma}
+In order to reason about the termination of a TRS through the analysis of its dependency pairs, we need to introduce the following definition, which allows us to connect reduction sequences of our TRSs to sequences of dependency pairs. Theorem \ref{thm:no_infinite_chains} then asserts that termination can be equivalently characterised by the nonexistence of infinite chains.
+\begin{definition}
+    Consider some fixed TRS $R$. An \emph{R-chain} is a sequence of dependency pairs $\dpair{s_1}{t_1}_R ~ \dpair{s_2}{t_2}_R ~ \cdots$, along with a sequence of substitutions $\theta_1 \theta_2 \cdots$, such that $t_i \theta_i \rightarrow_R^* s_{i+1}\theta_{i+1}$ for all $i$.
+\end{definition}
+\begin{theorem}[Arts and Giesl \cite{arts2000dependency}]\label{thm:no_infinite_chains}
     A TRS is terminating iff it does not induce an infinite chain.
 \end{theorem} 
 
+
+
 \section{Relative Chains}
 
-\begin{definition}
-    Consider two TRSs $R$ and $S$, and assume that $R$ comes equipped with dependency pairs $\dpair{\cdot}{\cdot}_R$. A sequence of these pairs $\dpair{s_1}{t_1}_R ~ \dpair{s_2}{t_2}_R \cdots$ forms an $R/S$-chain iff there exists some sequence of substitutions $\theta_1 \theta_2 \cdots$ satisfying $t_i \theta_i \rightarrow^*_S s_{i+1}\theta_{i+1}$ for each $i$. 
-\end{definition}
+In order to analyse the termination of the union of two TRSs, we consider the union of their dependency pairs. The following definition generalises the notion of a chain, separating rewrite system used in the intermediate reduction steps from the rewrite system that induces the dependency pairs in the chain.
 
 \begin{definition}
-    Consider some TRS $S := R_1 \cup R_2$, which is the union of two other TRSs. An $S$-chain is \emph{spanning} iff it is of the form $\cdots p_1 p_2 \cdots$ where $p_1 \in DP(R_1)$ and $p_2 \in DP(R_2)$. In this case, we say that this chain spans \emph{from} $R_1$ \emph{to} $R_2$.
+    Consider two TRSs $R$ and $S$. A sequence of $R$'s dependency pairs $\dpair{s_1}{t_1}_R ~ \dpair{s_2}{t_2}_R \cdots$ forms an \emph{R/S-chain} iff there exists some sequence of substitutions $\theta_1 \theta_2 \cdots$ satisfying $t_i \theta_i \rightarrow^*_S s_{i+1}\theta_{i+1}$ for each $i$. 
 \end{definition}
 
+We also define what it means for a chain over the union of two rewrite systems to alternate between applying rules in each of the systems:
+\begin{definition}
+    Consider some TRS $S := R_1 \cup R_2$, which is the union of two other TRSs. An $S$-chain is \emph{spanning} iff it is of the form $\cdots p_1 p_2 \cdots$ where $p_1 \in DP(R_1)$ and $p_2 \in DP(R_2)$, or vice versa. In this case, we say that this chain spans \emph{from} $R_1$ \emph{to} $R_2$.
+\end{definition}
+The following theorem characterises modular termination in terms of sub-relative termination and the nonexistence of two-way spanning chains:
 \begin{theorem}
     Consider two TRSs $R_1$ and $R_2$. $S := R_1 \cup R_2$ is terminating if both of the following hold: \begin{enumerate}
         \item There are no infinite $R_1/S$- or $R_2/S$-chains. \label{cond:no_r_chains}
@@ -82,16 +102,36 @@ Here, we will consider TRSs defined by a set of oriented equations $R \subseteq 
 \end{theorem}
 
 \begin{proof}
-    We proceed by contrapositive. Assume that $S$ is nonterminating. Hence, by Theorem \ref{thm:no_infinite_chains}, $R_1 \cup R_2$ induces an infinite chain. We now demonstrate that any such chain violates one of our conditions. Observe that an infinite chain must repeat some finite sequence $s$ of dependency pairs infinitely many times. This cycle must occur either entirely within $DP(R_1)$ or $DP(R_2)$, or must alternate between $DP(R_1)$ and $DP(R_2)$. More formally, we have two cases: \begin{enumerate}
-        \item $s \in DP(R_1)^* \cup DP(R_2)^*$. Hence $R_1$ or $R_2$ induces an infinite chain, which violates condition \eqref{cond:no_r_chains}. 
+    We proceed by contrapositive. Assume that $S$ is nonterminating; hence, by Theorem \ref{thm:no_infinite_chains}, $S$ induces an infinite chain. We now demonstrate that any such chain violates one of our conditions. Observe that, since $DP(S)$ is finite, an infinite chain must repeat some finite cycle $s \in DP(S)^*$ infinitely many times; additionally, assume that $s$ is the longest such cycle. Also note that, via Lemma \ref{thm:dep_pair_mod}, $DP(S) = DP(R_1) \cup DP(R_2)$. Hence, this cycle must occur either entirely within $DP(R_1)$ or $DP(R_2)$, or must alternate between $DP(R_1)$ and $DP(R_2)$. More formally, we have two cases: \begin{enumerate}
+        \item $s \in DP(R_1)^*$ or  $s \in DP(R_2)^*$. Hence, $R_1$ or $R_2$ induces an infinite chain, which violates condition \eqref{cond:no_r_chains}. 
         
-        \item $s = \cdots x_1 x_2 \cdots y_2 y_1 \cdots$, where $x_i, y_i \in DP(R_i)$ for $i \in \{1, 2\}$ (i.e. $s$ spans from $R_1$ to $R_2$ and from $R_2$ to $R_1$). This directly violates condition \eqref{cond:no_span_chains}. 
+        \item $s = \cdots x_1 x_2 \cdots y_2 y_1 \cdots$, where $x_i, y_i \in DP(R_i), i \in \{1, 2\}$ (i.e. $s$ spans from $R_1$ to $R_2$ and from $R_2$ to $R_1$), which violates condition \eqref{cond:no_span_chains}. 
     \end{enumerate}
     % ~\\
     % ($\Rightarrow$) Again, we proceed by contrapositive. Assume that condition \eqref{cond:no_r_chains} fails. As before, this immediately induces an infinite $S$-chain. Now assume that condition \eqref{cond:no_span_chains} fails.  
 \end{proof}
 
+
+
 \section{Flat Termination and Stability}
+
+
+
+\section{Existing Results in the Relative Chain Framework}
+
+\begin{definition}
+    
+\end{definition}
+
+\begin{definition}
+    
+\end{definition}
+
+We attempt to demonstrate the versatility and applicability of our framework by applying it to prove the following existing result:
+\begin{theorem}[Ohlebusch \cite{ohlebusch1994modular}]
+    Consider two disjoint and terminating TRSs $R_1$ and $R_2$. If $S := R_1 \cup R_2$ is nonterminating, then $R_1$ is not $\mathcal{C}_\epsilon$-terminating and $R_2$ is collapsing (or vice versa).x
+\end{theorem}
+
 
 \renewcommand\em{\it}
 \printbibliography[title={References}]
