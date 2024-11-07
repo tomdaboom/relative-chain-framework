@@ -54,7 +54,9 @@ $T(\Sigma, V)$ is defined inductively as follows: \begin{enumerate}
 
 The recursive structure of $T(\Sigma, V)$ prompts us to think of terms in a TRS as \emph{syntax trees}. We define $Pos(M) \subseteq \mathbb{N}^*$ for each $M \in T(\Sigma, V)$ to be the set of positions in $M$'s syntax tree. The root of the tree has position $\epsilon$, and the $i$th child of a node at position $p$ has position $pi$. $M|_p$ is the subterm of $M$ rooted at position $p$, and $M[N]_p$ denotes $M$ with its term at position $p$ replaced by $N \in T(\Sigma, V)$. Additionally, we define $Var(M) \subseteq V$ to be the set of variables appearing in a term.
 
-A \emph{(one-hole) context} $C[\cdot] : T(\Sigma, V) \rightarrow T(\Sigma, V)$ is a term with a hole $\square$ at some position. $C[M]$ denotes the context $C[\cdot]$ with its hole replaced by the term $M$. A \emph{substitution} $\theta : X \rightarrow T(\Sigma, V)$ is a function mapping variables to terms, for which the set $dom(\theta) := \{ x ~|~ \theta(x) \neq x\}$ is finite. Therefore, a substitution can be defined in terms of its $dom(\theta)$-images, in which case we write $\theta = [x_1 \mapsto M_1, x_2 \mapsto M_2, \cdots]$ for variables $x_i$ and terms $M_i$. $M \theta$ denotes the term $M$ with each variable replaced by its $\theta$-image, and we call $M\theta$ an \emph{instance} of $M$. 
+A \emph{(one-hole) context} $C[\cdot] : T(\Sigma, V) \rightarrow T(\Sigma, V)$ is a term with a hole $\square$ at some position. $C[M]$ denotes the context $C[\cdot]$ with its hole replaced by the term $M$. 
+
+A \emph{substitution} $\theta : X \rightarrow T(\Sigma, V)$ is a function mapping variables to terms, for which the set $dom(\theta) := \{ x ~|~ \theta(x) \neq x\}$ is finite. Therefore, a substitution can be defined in terms of its $dom(\theta)$-images, in which case we write $\theta = [x_1 \mapsto M_1, x_2 \mapsto M_2, \cdots]$ for variables $x_i$ and terms $M_i$. $M \theta$ denotes the term $M$ with each variable replaced by its $\theta$-image, and we call $M\theta$ an \emph{instance} of $M$. For two substitutions $\theta, \sigma$, we say that $\sigma$ is \emph{less general} than $\theta$ iff there exists some other substitution $\theta'$ such that $\sigma = \theta' \circ \theta$. In this case, we write $\sigma \leq \theta$. 
 \\~\\
 A reduction system $(X, \rightarrow)$ consists of a set $X$ equipped with a binary relation $\rightarrow ~\subseteq X \times X$. A reduction is \emph{terminating} iff there exist no infinite sequences $x_1x_2 \cdots \in X^\omega$ with $x_1 \rightarrow x_2 \rightarrow \cdots$. $x \in X$ is a \emph{redux} of $\rightarrow$ iff $\exists y \in X : x \rightarrow y$. If $x$ is not a redux, we say that it is in \emph{$\rightarrow$-normal form}. A reduction system over $T(\Sigma, V)$ is a \emph{term rewrite syste (TRS)} iff it is closed under contexts and substitutions (i.e. if $M \rightarrow N$, then $C[M\theta] \rightarrow C[N\theta]$ for all contexts $C[\cdot]$ and substitutions $\theta$). 
 
@@ -73,7 +75,7 @@ The fact that each dependency pair is induced by exactly one equational constrai
 \end{lemma}
 In order to reason about the termination of a TRS through the analysis of its dependency pairs, we need to introduce the following definition, which allows us to connect reduction sequences of our TRSs to sequences of dependency pairs. Theorem \ref{thm:no_infinite_chains} then asserts that termination can be equivalently characterised by the nonexistence of infinite chains.
 \begin{definition}
-    Consider some fixed TRS $R$. An \emph{R-chain} is a sequence of dependency pairs $\dpair{s_1}{t_1}_R ~ \dpair{s_2}{t_2}_R ~ \cdots$, along with a sequence of substitutions $\theta_1 \theta_2 \cdots$, such that $t_i \theta_i \rightarrow_R^* s_{i+1}\theta_{i+1}$ for all $i$.
+    Consider some fixed TRS $R$. An \emph{R-chain} is a sequence of dependency pairs $\dpair{s_1}{t_1}_R ~ \dpair{s_2}{t_2}_R ~ \cdots$, along with a substitution $\theta$, such that $t_i \theta \rightarrow_R^* s_{i+1}\theta$ for all $i$.
 \end{definition}
 \begin{theorem}[Arts and Giesl \cite{arts2000dependency}]\label{thm:no_infinite_chains}
     A TRS is terminating iff it does not induce an infinite chain.
@@ -86,7 +88,7 @@ In order to reason about the termination of a TRS through the analysis of its de
 In order to analyse the termination of the union of two TRSs, we consider the union of their dependency pairs. The following definition generalises the notion of a chain, separating rewrite system used in the intermediate reduction steps from the rewrite system that induces the dependency pairs in the chain.
 
 \begin{definition}
-    Consider two TRSs $R$ and $S$. A sequence of $R$'s dependency pairs $\dpair{s_1}{t_1}_R ~ \dpair{s_2}{t_2}_R \cdots$ forms an \emph{R/S-chain} iff there exists some sequence of substitutions $\theta_1 \theta_2 \cdots$ satisfying $t_i \theta_i \rightarrow^*_S s_{i+1}\theta_{i+1}$ for each $i$. 
+    Consider two TRSs $R$ and $S$. A sequence of $R$'s dependency pairs $\dpair{s_1}{t_1}_R \dpair{s_2}{t_2}_R \cdots$ forms an \emph{R/S-chain} iff there exists some substitution $\theta$ satisfying $t_i \theta \rightarrow^*_S s_{i+1}\theta$ for each $i$. 
 \end{definition}
 
 We also define what it means for a chain over the union of two rewrite systems to alternate between applying rules in each of the systems:
@@ -127,16 +129,29 @@ The following theorem characterises modular termination in terms of sub-relative
     $P^\flat$- and $P^\flat/Q$-chains are defined as before, and a TRS $P$ is \emph{flat-terminating} iff it induces no infinite $P^\flat$-chains. 
 \end{definition}
 
-\begin{lemma}
-    A TRS $P$ is flat-terminating iff it induces no infinite $P^\flat/\!\!=$-chains.  
+\begin{lemma} 
+    Consider some stable TRS $R$. For any flat chain $\dpair{s_1}{t_1}^\flat_R \dpair{s_2}{t_2}^\flat_R \cdots$ unified by $\theta$, there exists some $\sigma \leq \theta$ such that $t_i \sigma = s_{i+1} \sigma$ for each $i$. 
 \end{lemma}
 
 \begin{proof}
+    We construct the substitutions $\sigma_i$ by considering each reduction step in the chain. For each $t_i \rightarrow^*_R s_{i+1}$, we define the substitution $\sigma \leq \theta$.  In the case where $t_i\theta = s_{i+1}\theta$, we simply define $\sigma_i := \theta$. 
     
+    We now consider the case where $t_i \theta \rightarrow^+_R s_{i+1} \theta$. Given that $t_i$ is flat, we can deduce that it does not contain any symbols from $\Sigma_{def}$. Hence, $t_i$ is not a redux of $\rightarrow_R$. It follows that $\theta(x^\flat)$ must be a redux for some flat variable $x^\flat = t_i |_p$. Define $X_i^\flat$ to be the set of all such variables in $t_i$. Observe that, in the process of rewriting $t_i\theta$ to $s_i\theta$, we must reduce one such $\theta(x^\flat)$, transforming it into some other term $(s_{i+1} \theta)|_p \leftarrow^+_R \theta(x^\flat)$. We choose a $\sigma_i$ that simultaneously applies all of these sub-reductions for each such member of $X_i^\flat$, and defaults to $\theta$ otherwise: 
+    $$\sigma_i(y) := \begin{cases}
+        (s_{i+1} \theta)|_p  &\text{if}~ y \in X_i^\flat ~\text{and}~ \theta(y) \rightarrow^+_R (s_{i+1}\theta)|_p \\
+        \theta(y) &\text{otherwise}
+    \end{cases}$$
+    Note that our construction ensures $t_i\sigma_i = s_{i+1}\sigma_i$ for all $i$. Our global substitution $\sigma := \sigma_1 \circ \sigma_2 \circ \cdots$ is obtained by simply taking the composition of each $\sigma_i$. 
+    
+    It remains to show that $\sigma$ is a valid substitution that rewrites only finitely many variables, even when our chain is infinite. Observe that some suffix of any infinite chain must consist of the same sequence of flattened pairs repeated infinitely many times. Hence, we only have finitely many distinct $\sigma_i$; given that each of these is finite, their composition must also be finite. 
 \end{proof}
 
+\begin{corollary} \label{thm:flat_chain_equality}
+    A stable TRS $R$ is flat-terminating iff it induces no infinite $P^\flat/\!\!=$-chains.  
+\end{corollary}
+
 \begin{theorem}
-    Consider a flat-terminating TRS $P$. There are no infinite $P^\flat/Q$-chains for any TRS $Q$ that is $P$-normal.
+    Consider a flat-terminating TRS $P$. There are no infinite $P^\flat/Q$-chains for any other TRS $Q$ that is $P$-normal.
 \end{theorem}
 
 \begin{proof}
