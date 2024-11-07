@@ -104,7 +104,7 @@ The following theorem characterises modular termination in terms of sub-relative
 \end{theorem}
 
 \begin{proof}
-    We proceed by contrapositive. Assume that $S$ is nonterminating; hence, by Theorem \ref{thm:no_infinite_chains}, $S$ induces an infinite chain. We now demonstrate that any such chain violates one of our conditions. Observe that, since $DP(S)$ is finite, an infinite chain must repeat some finite cycle $s \in DP(S)^*$ infinitely many times; additionally, assume that $s$ is the longest such cycle. Also note that, via Lemma \ref{thm:dep_pair_mod}, $DP(S) = DP(R_1) \cup DP(R_2)$. Hence, this cycle must occur either entirely within $DP(R_1)$ or $DP(R_2)$, or must alternate between $DP(R_1)$ and $DP(R_2)$. More formally, we have two cases: \begin{enumerate}
+    We proceed by contrapositive, showing that the nontermination of $S$ implies the failure of one of our conditions. Assume that $S$ is nonterminating; hence, by Theorem \ref{thm:no_infinite_chains}, $S$ induces an infinite chain. We now demonstrate that any such chain violates one of our conditions. Observe that, since $DP(S)$ is finite, an infinite chain must repeat some finite cycle $s \in DP(S)^*$ infinitely many times; additionally, assume that $s$ is the longest such cycle. Also note that, via Lemma \ref{thm:dep_pair_mod}, $DP(S) = DP(R_1) \cup DP(R_2)$. Hence, this cycle must occur either entirely within $DP(R_1)$ or $DP(R_2)$, or must alternate between $DP(R_1)$ and $DP(R_2)$. More formally, we have two cases: \begin{enumerate}
         \item $s \in DP(R_1)^*$ or  $s \in DP(R_2)^*$. Hence, $R_1$ or $R_2$ induces an infinite chain, which violates condition \eqref{cond:no_r_chains}. 
         
         \item $s = \cdots x_1 x_2 \cdots y_2 y_1 \cdots$, where $x_i, y_i \in DP(R_i), i \in \{1, 2\}$ (i.e. $s$ spans from $R_1$ to $R_2$ and from $R_2$ to $R_1$), which violates condition \eqref{cond:no_span_chains}. 
@@ -123,22 +123,22 @@ The following theorem characterises modular termination in terms of sub-relative
     We define a set of \emph{flat dependency pairs} $\dpair{\cdot}{\cdot}^\flat_P$, where each rule is obtained by \emph{flattening} a dependency pair. For a dependency pair $\dpair{s}{G(t_1 , \cdots, t_n)}_P$, its flattening is written $\dpair{s}{G( t^\flat_1, \cdots, t_n^\flat)}^\flat_P$. A term $t$'s flattening $t^\flat$ is computed recursively as follows (where $x^\flat \in V^\flat$ is an arbitrary unused flat variable):
     \begin{itemize}
         \item If $t \in \Sigma_{con}$, then $t^\flat := t$
-        \item If $t \in V$ or $t = f (b_1, \cdots, b_k)$ where $f \in \Sigma_{def}$, then $t^\flat := x^\flat$.
+        \item If $t \in V$, or $t = f (b_1, \cdots, b_k)$ where $f \in \Sigma_{def}$, then $t^\flat := x^\flat$.
         \item If $t = f( b_1, \cdots, b_k)$ where $f \in \Sigma_{con}$, then $t^\flat := f( b^\flat_1, \cdots, b^\flat_k)$.
     \end{itemize} 
-    $P^\flat$- and $P^\flat/Q$-chains are defined as before, and a TRS $P$ is \emph{flat-terminating} iff it induces no infinite $P^\flat$-chains. 
+    $P^\flat$- and $P^\flat/Q$-chains are defined as before, but over these flattened dependency pairs. A TRS $P$ is \emph{flat-terminating} iff it induces no infinite $P^\flat$-chains. 
 \end{definition}
 
 \begin{lemma} 
-    Consider some stable TRS $R$. For any flat chain $\dpair{s_1}{t_1}^\flat_R \dpair{s_2}{t_2}^\flat_R \cdots$ unified by $\theta$, there exists some $\sigma \leq \theta$ such that $t_i \sigma = s_{i+1} \sigma$ for each $i$. 
+    Consider some TRS $P$, and some other stable TRS $Q$. For any $P^\flat/Q$-chain $\dpair{s_1}{t_1}^\flat_P \dpair{s_2}{t_2}^\flat_P \cdots$ unified by $\theta$, there exists some $\sigma \leq \theta$ such that $t_i \sigma = s_{i+1} \sigma$ for each $i$. 
 \end{lemma}
 
 \begin{proof}
-    We construct the substitutions $\sigma_i$ by considering each reduction step in the chain. For each $t_i \rightarrow^*_R s_{i+1}$, we define the substitution $\sigma \leq \theta$.  In the case where $t_i\theta = s_{i+1}\theta$, we simply define $\sigma_i := \theta$. 
+    We construct the substitutions $\sigma_i$ by considering each reduction step in the chain. For each $t_i \rightarrow^*_Q s_{i+1}$, we define the substitution $\sigma \leq \theta$.  In the case where $t_i\theta = s_{i+1}\theta$, we simply define $\sigma_i := \theta$. 
     
-    We now consider the case where $t_i \theta \rightarrow^+_R s_{i+1} \theta$. Given that $t_i$ is flat, we can deduce that it does not contain any symbols from $\Sigma_{def}$. Hence, $t_i$ is not a redux of $\rightarrow_R$. It follows that $\theta(x^\flat)$ must be a redux for some flat variable $x^\flat = t_i |_p$. Define $X_i^\flat$ to be the set of all such variables in $t_i$. Observe that, in the process of rewriting $t_i\theta$ to $s_i\theta$, we must reduce one such $\theta(x^\flat)$, transforming it into some other term $(s_{i+1} \theta)|_p \leftarrow^+_R \theta(x^\flat)$. We choose a $\sigma_i$ that simultaneously applies all of these sub-reductions for each such member of $X_i^\flat$, and defaults to $\theta$ otherwise: 
+    We now consider the case where $t_i \theta \rightarrow^+_Q s_{i+1} \theta$. Given that $t_i$ is flat, we can deduce that it does not contain any symbols from $\Sigma_{def}$. Hence, $t_i$ is not a redux of $Q$. It follows that $\theta(x^\flat)$ must be a redux for some flat variable $x^\flat = t_i |_p$. Define $X_i^\flat$ to be the set of all such variables in $t_i$. Observe that, in the process of rewriting $t_i\theta$ to $s_i\theta$, we must reduce one such $\theta(x^\flat)$, transforming it into some other term $(s_{i+1} \theta)|_p \leftarrow^+_Q \theta(x^\flat)$. We choose a $\sigma_i$ that simultaneously applies all of these sub-reductions for each such member of $X_i^\flat$, and defaults to $\theta$ otherwise: 
     $$\sigma_i(y) := \begin{cases}
-        (s_{i+1} \theta)|_p  &\text{if}~ y \in X_i^\flat ~\text{and}~ \theta(y) \rightarrow^+_R (s_{i+1}\theta)|_p \\
+        (s_{i+1} \theta)|_p  &\text{if}~ y \in X_i^\flat ~\text{and}~ \theta(y) \rightarrow^+_Q (s_{i+1}\theta)|_p \\
         \theta(y) &\text{otherwise}
     \end{cases}$$
     Note that our construction ensures $t_i\sigma_i = s_{i+1}\sigma_i$ for all $i$. Our global substitution $\sigma := \sigma_1 \circ \sigma_2 \circ \cdots$ is obtained by simply taking the composition of each $\sigma_i$. 
@@ -150,9 +150,9 @@ The following theorem characterises modular termination in terms of sub-relative
     A stable TRS $R$ is flat-terminating iff it induces no infinite $P^\flat/\!\!=$-chains.  
 \end{corollary}
 
-\begin{theorem}
-    Consider a flat-terminating TRS $P$. There are no infinite $P^\flat/Q$-chains for any other TRS $Q$ that is $P$-normal.
-\end{theorem}
+\begin{corollary}
+    Consider a flat-terminating TRS $P$. There are no infinite $P^\flat/Q$-chains for any stable TRS $Q$.
+\end{corollary}
 
 \begin{proof}
     
@@ -164,7 +164,7 @@ The following theorem characterises modular termination in terms of sub-relative
 
 We begin with a couple of definitions:
 \begin{definition}
-    An equation $M \approx N$ is \emph{collapsing} iff $N$ is a variable.
+    An equation $M \approx N$ is \emph{collapsing} iff $N$ is a variable. A TRS is \emph{non-collapsing} iff all of its equations are non-collapsing. 
 \end{definition}
 \begin{definition}
     A TRS $R$ over $T(\Sigma, V)$ is \emph{$\mathcal{C}_\epsilon$-terminating} iff $R \cup \{\chi(x, y) \approx x, \chi (x, y)\approx y\}$ is terminating, where $\chi \in \Sigma^{(2)}_{con}$ does not appear in $R$.   
