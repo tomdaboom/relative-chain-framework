@@ -22,7 +22,7 @@
 \renewcommand\em{\bfseries}
 
 \newcommand{\agap}{\hspace{0.25em}}
-\newcommand{\dpair}[2]{\langle #1, #2 \rangle}
+\newcommand{\dpair}[2]{\left\langle #1, #2 \right\rangle}
 
 \usepackage[backend=biber]{biblatex}
 \addbibresource{./ref.bib}
@@ -60,7 +60,9 @@ A \emph{substitution} $\theta : X \rightarrow T(\Sigma, V)$ is a function mappin
 \\~\\
 A reduction system $(X, \rightarrow)$ consists of a set $X$ equipped with a binary relation $\rightarrow ~\subseteq X \times X$. A reduction is \emph{terminating} iff there exist no infinite sequences $x_1x_2 \cdots \in X^\omega$ with $x_1 \rightarrow x_2 \rightarrow \cdots$. $x \in X$ is a \emph{redux} of $\rightarrow$ iff $\exists y \in X : x \rightarrow y$. If $x$ is not a redux, we say that it is in \emph{$\rightarrow$-normal form}. A reduction system over $T(\Sigma, V)$ is a \emph{term rewrite syste (TRS)} iff it is closed under contexts and substitutions (i.e. if $M \rightarrow N$, then $C[M\theta] \rightarrow C[N\theta]$ for all contexts $C[\cdot]$ and substitutions $\theta$). 
 
-Here, we will consider TRSs defined by a set of equations $R \subseteq T(\Sigma, V) \times T(\Sigma, V)$. Note that our equations are presumed to be \emph{oriented}, meaning that $M \approx N \in R$ does not imply that $N \approx M \in R$. We also assume that $Var(M) \supseteq Var(N)$ for each $M \approx N \in R$. We define $\rightarrow_R$ such that, for each $M \approx N \in R$, and for all contexts $C[\cdot]$ and substitutions $\theta$, $C[M\theta] \rightarrow_R C[N\theta]$. We say that an equation $M \approx N$ is \emph{stable} iff $M$ is headed by a defined function symbol. A TRS is stable iff all of its equations are stable.  
+Here, we will consider TRSs defined by a set of equations $R \subseteq T(\Sigma, V) \times T(\Sigma, V)$. Note that our equations are presumed to be \emph{oriented}, meaning that $M \approx N \in R$ does not imply that $N \approx M \in R$. We also assume that $Var(M) \supseteq Var(N)$ for each $M \approx N \in R$. We define $\rightarrow_R$ such that, for each $M \approx N \in R$, and for all contexts $C[\cdot]$ and substitutions $\theta$, $C[M\theta] \rightarrow_R C[N\theta]$. 
+
+We say that an equation $M \approx N$ is \emph{stable} iff $M$ is headed by a defined function symbol. A TRS is stable iff all of its equations are stable. We say that an equation $M \approx N$ is $Q$-normal (where $Q$ is some TRS) iff $N$ is in $Q$-normal form. A TRS $R$ is $Q$-normal iff all of its ruled are $Q$-normal.  
 
 
 \subsection{The Dependency Pair Framework}
@@ -75,13 +77,11 @@ The fact that each dependency pair is induced by exactly one equational constrai
 \end{lemma}
 In order to reason about the termination of a TRS through the analysis of its dependency pairs, we need to introduce the following definition, which allows us to connect reduction sequences of our TRSs to sequences of dependency pairs. Theorem \ref{thm:no_infinite_chains} then asserts that termination can be equivalently characterised by the nonexistence of infinite chains.
 \begin{definition}
-    Consider some fixed TRS $R$. An \emph{R-chain} is a sequence of dependency pairs $\dpair{s_1}{t_1}_R ~ \dpair{s_2}{t_2}_R ~ \cdots$, along with a substitution $\theta$, such that $t_i \theta \rightarrow_R^* s_{i+1}\theta$ for all $i$.
+    Consider some fixed TRS $R$. An \emph{R-chain} is a sequence of dependency pairs $\dpair{s_1}{t_1}_R \dpair{s_2}{t_2}_R \cdots$, along with a substitution $\theta$, such that $t_i \theta \rightarrow_R^* s_{i+1}\theta$ for all $i$.
 \end{definition}
 \begin{theorem}[Arts and Giesl \cite{arts2000dependency}]\label{thm:no_infinite_chains}
     A TRS is terminating iff it does not induce an infinite chain.
 \end{theorem} 
-
-
 
 \section{Relative Chains}
 
@@ -105,7 +105,7 @@ The following theorem characterises modular termination in terms of sub-relative
 
 \begin{proof}
     We proceed by contrapositive, showing that the nontermination of $S$ implies the failure of one of our conditions. Assume that $S$ is nonterminating; hence, by Theorem \ref{thm:no_infinite_chains}, $S$ induces an infinite chain. We now demonstrate that any such chain violates one of our conditions. Observe that, since $DP(S)$ is finite, an infinite chain must repeat some finite cycle $s \in DP(S)^*$ infinitely many times; additionally, assume that $s$ is the longest such cycle. Also note that, via Lemma \ref{thm:dep_pair_mod}, $DP(S) = DP(R_1) \cup DP(R_2)$. Hence, this cycle must occur either entirely within $DP(R_1)$ or $DP(R_2)$, or must alternate between $DP(R_1)$ and $DP(R_2)$. More formally, we have two cases: \begin{enumerate}
-        \item $s \in DP(R_1)^*$ or  $s \in DP(R_2)^*$. Hence, $R_1$ or $R_2$ induces an infinite chain, which violates condition \eqref{cond:no_r_chains}. 
+        \item $s \in DP(R_1)^*$ or  $s \in DP(R_2)^*$. Hence, $R_1$ or $R_2$ induces an infinite $R/S$-chain, which violates condition \eqref{cond:no_r_chains}. 
         
         \item $s = \cdots x_1 x_2 \cdots y_2 y_1 \cdots$, where $x_i, y_i \in DP(R_i), i \in \{1, 2\}$ (i.e. $s$ spans from $R_1$ to $R_2$ and from $R_2$ to $R_1$), which violates condition \eqref{cond:no_span_chains}. 
     \end{enumerate}
@@ -129,6 +129,11 @@ The following theorem characterises modular termination in terms of sub-relative
     $P^\flat$- and $P^\flat/Q$-chains are defined as before, but over these flattened dependency pairs. A TRS $P$ is \emph{flat-terminating} iff it induces no infinite $P^\flat$-chains. 
 \end{definition}
 
+\begin{lemma} \label{thm:flat_termination_overapprox}
+    Every $P/Q$-chain corresponds to a $P^\flat/Q$-chain. Therefore, if $P$ is flat-terminating, then it is also terminating.
+\end{lemma}
+
+
 \begin{lemma} 
     Consider some TRS $P$, and some other stable TRS $Q$. For any $P^\flat/Q$-chain $\dpair{s_1}{t_1}^\flat_P \dpair{s_2}{t_2}^\flat_P \cdots$ unified by $\theta$, there exists some $\sigma \leq \theta$ such that $t_i \sigma = s_{i+1} \sigma$ for each $i$. 
 \end{lemma}
@@ -150,12 +155,21 @@ The following theorem characterises modular termination in terms of sub-relative
     A stable TRS $R$ is flat-terminating iff it induces no infinite $P^\flat/\!\!=$-chains.  
 \end{corollary}
 
-\begin{corollary}
-    Consider a flat-terminating TRS $P$. There are no infinite $P^\flat/Q$-chains for any stable TRS $Q$.
+\begin{corollary} \label{thm:flat_term_stable}
+    A flat-terminating TRS $P$ and a stable TRS $Q$ induce no infinite $P^\flat/Q$-chains.
 \end{corollary}
 
+\begin{theorem}
+    If $P$ and $H$ are both stable, $P$ is flat-terminating, and $H$ is terminating and $P$-normal, then $S := P \cup H$ is terminating.
+\end{theorem}
+
 \begin{proof}
-    
+    By Theorem \ref{thm:dep_pair_mod}, our result follows from the conjunction of the following: \begin{enumerate}
+        \item There are no infinite $H/S$-chains.
+        \item All of $S$'s spanning chains span from $P$ to $H$.
+        \item There are no infinite $P/S$-chains.
+    \end{enumerate}
+    (1) and (2) follow trivially from the fact that $H$ is terminating and $P$-normal. It remains to show (3). By Corollary \ref{thm:flat_term_stable}, and from the fact that $S$ is also clearly stable, we have that there are no infinite $P^\flat/S$-chains. By Lemma \ref{thm:flat_termination_overapprox}, we deduce that there are no infinite $P/S$-chains. 
 \end{proof}
 
 
