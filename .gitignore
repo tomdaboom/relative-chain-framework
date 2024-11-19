@@ -7,3 +7,6 @@ main.out
 main.run.xml
 main.synctex.gz
 main.synctex(busy)
+.vscode/ltex.dictionary.en-GB.txt
+.vscode/ltex.disabledRules.en-GB.txt
+.vscode/ltex.hiddenFalsePositives.en-GB.txt

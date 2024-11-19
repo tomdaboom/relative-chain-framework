@@ -52,17 +52,17 @@ $T(\Sigma, V)$ is defined inductively as follows: \begin{enumerate}
     \item If $f \in \Sigma^{(n)}$, and $M_i \in T(\Sigma, V)$ for each $i \in [n]$, then $f(M_1, \cdots, M_n) \in T(\Sigma, V)$. 
 \end{enumerate}
 
-The recursive structure of $T(\Sigma, V)$ prompts us to think of terms in a TRS as \emph{syntax trees}. We define $Pos(M) \subseteq \mathbb{N}^*$ for each $M \in T(\Sigma, V)$ to be the set of positions in $M$'s syntax tree. The root of the tree has position $\epsilon$, and the $i$th child of a node at position $p$ has position $pi$. $M|_p$ is the subterm of $M$ rooted at position $p$, and $M[N]_p$ denotes $M$ with its term at position $p$ replaced by $N \in T(\Sigma, V)$. Additionally, we define $Var(M) \subseteq V$ to be the set of variables appearing in a term.
+The recursive structure of $T(\Sigma, V)$ prompts us to think of terms in a TRS as \emph{syntax trees}. We define $Pos(M) \subseteq \mathbb{N}^*$ for each $M \in T(\Sigma, V)$ to be the set of positions in $M$'s syntax tree. The root of the tree has position $\epsilon$, and the $i$th child of a node at position $p$ has position $pi$. $M|_p$ is the subterm of $M$ rooted at position $p$, and $M[N]_p$ denotes $M$ with its term at position $p$ replaced by $N \in T(\Sigma, V)$. Additionally, we define $Var(M) \subseteq V$ to be the set of variables appearing in a term. $M$ is \emph{closed} iff $Var(M) = \emptyset$. 
 
 A \emph{(one-hole) context} $C[\cdot] : T(\Sigma, V) \rightarrow T(\Sigma, V)$ is a term with a hole $\square$ at some position. $C[M]$ denotes the context $C[\cdot]$ with its hole replaced by the term $M$. 
 
-A \emph{substitution} $\theta : X \rightarrow T(\Sigma, V)$ is a function mapping variables to terms, for which the set $dom(\theta) := \{ x ~|~ \theta(x) \neq x\}$ is finite. Therefore, a substitution can be defined in terms of its $dom(\theta)$-images, in which case we write $\theta = [x_1 \mapsto M_1, x_2 \mapsto M_2, \cdots]$ for variables $x_i$ and terms $M_i$. $M \theta$ denotes the term $M$ with each variable replaced by its $\theta$-image, and we call $M\theta$ an \emph{instance} of $M$. For two substitutions $\theta, \sigma$, we say that $\sigma$ is \emph{less general} than $\theta$ iff there exists some other substitution $\theta'$ such that $\sigma = \theta' \circ \theta$. In this case, we write $\sigma \leq \theta$. 
+A \emph{substitution} $\theta : X \rightarrow T(\Sigma, V)$ is a function mapping variables to terms, for which the set $\text{dom}(\theta) := \{ x \in V ~|~ \theta(x) \neq x\}$ is finite. Hence, we may write $\theta = [x_1 \mapsto M_1, x_2 \mapsto M_2, \cdots]$ for finitely many $x_i \in V$ and $M_i \in T(\Sigma,V)$. $M \theta$ denotes the term $M$ with each variable replaced by its $\theta$-image, and we call $M\theta$ an \emph{instance} of $M$. For two substitutions $\theta, \sigma$, we say that $\sigma$ is \emph{less general} than $\theta$ (and write $\sigma \leq \theta$) iff there exists some other substitution $\theta'$ such that $\sigma = \theta' \circ \theta$.
 \\~\\
-A reduction system $(X, \rightarrow)$ consists of a set $X$ equipped with a binary relation $\rightarrow ~\subseteq X \times X$. A reduction is \emph{terminating} iff there exist no infinite sequences $x_1x_2 \cdots \in X^\omega$ with $x_1 \rightarrow x_2 \rightarrow \cdots$. $x \in X$ is a \emph{redux} of $\rightarrow$ iff $\exists y \in X : x \rightarrow y$. If $x$ is not a redux, we say that it is in \emph{$\rightarrow$-normal form}. A reduction system over $T(\Sigma, V)$ is a \emph{term rewrite syste (TRS)} iff it is closed under contexts and substitutions (i.e. if $M \rightarrow N$, then $C[M\theta] \rightarrow C[N\theta]$ for all contexts $C[\cdot]$ and substitutions $\theta$). 
+A reduction system $(X, \rightarrow)$ consists of a set $X$ equipped with a binary relation $\rightarrow ~\subseteq X \times X$. A reduction is \emph{terminating} iff there exist no infinite sequences $x_1x_2 \cdots \in X^\omega$ with $x_1 \rightarrow x_2 \rightarrow \cdots$. $x \in X$ is a \emph{redux} of $\rightarrow$ iff $x \rightarrow y$ for some $y \in X$. If $x$ is not a redux, we say that it is in \emph{$\rightarrow$-normal form}. A reduction system over $T(\Sigma, V)$ is a \emph{term rewrite syste (TRS)} iff it is closed under contexts and substitutions (i.e. if $M \rightarrow N$, then $C[M\theta] \rightarrow C[N\theta]$ for all contexts $C[\cdot]$ and substitutions $\theta$). 
 
 Here, we will consider TRSs defined by a set of equations $R \subseteq T(\Sigma, V) \times T(\Sigma, V)$. Note that our equations are presumed to be \emph{oriented}, meaning that $M \approx N \in R$ does not imply that $N \approx M \in R$. We also assume that $Var(M) \supseteq Var(N)$ for each $M \approx N \in R$. We define $\rightarrow_R$ such that, for each $M \approx N \in R$, and for all contexts $C[\cdot]$ and substitutions $\theta$, $C[M\theta] \rightarrow_R C[N\theta]$. 
 
-We say that an equation $M \approx N$ is \emph{stable} iff $M$ is headed by a defined function symbol. A TRS is stable iff all of its equations are stable. We say that an equation $M \approx N$ is $Q$-normal (where $Q$ is some TRS) iff $N$ is in $Q$-normal form. A TRS $R$ is $Q$-normal iff all of its ruled are $Q$-normal.  
+An equation $M \approx N$ is \emph{stable} iff $M$ is headed by a defined function symbol. A TRS is stable iff all of its equations are stable. We say that an equation $M \approx N$ is $Q$-normal (where $Q$ is some TRS) iff $N$ is in $Q$-normal form. A TRS $R$ is $Q$-normal iff all of its rules are $Q$-normal.  
 
 
 \subsection{The Dependency Pair Framework}
@@ -75,7 +75,7 @@ The fact that each dependency pair is induced by exactly one equational constrai
 \begin{lemma} \label{thm:dep_pair_mod}
     $DP(R_1 \cup R_2) = DP(R_1) \cup DP(R_2)$
 \end{lemma}
-In order to reason about the termination of a TRS through the analysis of its dependency pairs, we need to introduce the following definition, which allows us to connect reduction sequences of our TRSs to sequences of dependency pairs. Theorem \ref{thm:no_infinite_chains} then asserts that termination can be equivalently characterised by the nonexistence of infinite chains.
+In order to reason about the termination of a TRS through the analysis of its dependency pairs, we need to introduce the following definition, which allows us to connect reduction sequences of our TRSs to sequences of dependency pairs. Theorem \ref{thm:no_infinite_chains} then asserts that termination can be equivalently characterised by the non-existence of infinite chains.
 \begin{definition}
     Consider some fixed TRS $R$. An \emph{R-chain} is a sequence of dependency pairs $\dpair{s_1}{t_1}_R \dpair{s_2}{t_2}_R \cdots$, along with a substitution $\theta$, such that $t_i \theta \rightarrow_R^* s_{i+1}\theta$ for all $i$.
 \end{definition}
@@ -133,72 +133,75 @@ The following theorem characterises modular termination in terms of sub-relative
     Every $P/Q$-chain corresponds to a $P^\flat/Q$-chain. Therefore, if $P$ is flat-terminating, then it is also terminating.
 \end{lemma}
 
-
 \begin{lemma} 
-    Consider some TRS $P$, and some other stable TRS $Q$. For any $P^\flat/Q$-chain $\dpair{s_1}{t_1}^\flat_P \dpair{s_2}{t_2}^\flat_P \cdots$ unified by $\theta$, there exists some $\sigma \leq \theta$ such that $t_i \sigma = s_{i+1} \sigma$ for each $i$. 
+    Consider some TRS $P$, and some other stable TRS $S$. For any $P^\flat/S$-chain $\dpair{s_1}{t_1}^\flat_P \dpair{s_2}{t_2}^\flat_P \cdots$ unified by $\theta$, there exists some $\sigma \leq \theta$ such that $t_i \sigma = s_{i+1} \sigma$ for each $i$. 
 \end{lemma}
 
 \begin{proof}
-    We construct the substitutions $\sigma_i$ by considering each reduction step in the chain. For each $t_i \rightarrow^*_Q s_{i+1}$, we define the substitution $\sigma \leq \theta$.  In the case where $t_i\theta = s_{i+1}\theta$, we simply define $\sigma_i := \theta$. 
+    We construct the substitutions $\sigma_i$ by considering each reduction step in the chain. For each $t_i \rightarrow^*_S s_{i+1}$, we define the substitution $\sigma \leq \theta$.  In the case where $t_i\theta = s_{i+1}\theta$, we simply define $\sigma_i := \theta$. 
     
-    We now consider the case where $t_i \theta \rightarrow^+_Q s_{i+1} \theta$. Given that $t_i$ is flat, we can deduce that it does not contain any symbols from $\Sigma_{def}$. Hence, $t_i$ is not a redux of $Q$. It follows that $\theta(x^\flat)$ must be a redux for some flat variable $x^\flat = t_i |_p$. Define $X_i^\flat$ to be the set of all such variables in $t_i$. Observe that, in the process of rewriting $t_i\theta$ to $s_i\theta$, we must reduce one such $\theta(x^\flat)$, transforming it into some other term $(s_{i+1} \theta)|_p \leftarrow^+_Q \theta(x^\flat)$. We choose a $\sigma_i$ that simultaneously applies all of these sub-reductions for each such member of $X_i^\flat$, and defaults to $\theta$ otherwise: 
+    We now consider the case where $t_i \theta \rightarrow^+_S s_{i+1} \theta$. Given that $t_i$ is flat, we can deduce that it does not contain any symbols from $\Sigma_{def}$. Hence, $t_i$ is not a redux of $Q$. It follows that $\theta(x^\flat)$ must be a redux for some flat variable $x^\flat = t_i |_p$. Define $X_i^\flat$ to be the set of all such variables in $t_i$. Observe that, in the process of rewriting $t_i\theta$ to $s_i\theta$, we must reduce one such $\theta(x^\flat)$, transforming it into some other term $(s_{i+1} \theta)|_p \leftarrow^+_S \theta(x^\flat)$. We choose a $\sigma_i$ that simultaneously applies all of these sub-reductions for each such member of $X_i^\flat$, and defaults to $\theta$ otherwise: 
     $$\sigma_i(y) := \begin{cases}
-        (s_{i+1} \theta)|_p  &\text{if}~ y \in X_i^\flat ~\text{and}~ \theta(y) \rightarrow^+_Q (s_{i+1}\theta)|_p \\
+        (s_{i+1} \theta)|_p  &\text{if}~ y \in X_i^\flat ~\text{and}~ \theta(y) \rightarrow^+_S (s_{i+1}\theta)|_p \\
         \theta(y) &\text{otherwise}
     \end{cases}$$
     Note that our construction ensures $t_i\sigma_i = s_{i+1}\sigma_i$ for all $i$. Our global substitution $\sigma := \sigma_1 \circ \sigma_2 \circ \cdots$ is obtained by simply taking the composition of each $\sigma_i$. 
     
-    It remains to show that $\sigma$ is a valid substitution that rewrites only finitely many variables, even when our chain is infinite. Observe that some suffix of any infinite chain must consist of the same sequence of flattened pairs repeated infinitely many times. Hence, we only have finitely many distinct $\sigma_i$; given that each of these is finite, their composition must also be finite. 
+    It remains to show that $\sigma$ is a valid substitution that rewrites only finitely many variables, even when our chain is infinite. Observe that some suffix of any infinite chain must consist of the same sequence of flattened pairs repeated infinitely many times. Hence, we only have finitely many distinct $\sigma_i$; given that each of these has finite domain, their composition must also have finite domain. 
 \end{proof}
 
 \begin{corollary} \label{thm:flat_chain_equality}
-    A stable TRS $R$ is flat-terminating iff it induces no infinite $P^\flat/\!\!=$-chains.  
+    A TRS $P$ is flat-terminating iff it induces no infinite $P^\flat/\!\!=$-chains.  
 \end{corollary}
 
 \begin{corollary} \label{thm:flat_term_stable}
     A flat-terminating TRS $P$ and a stable TRS $Q$ induce no infinite $P^\flat/Q$-chains.
 \end{corollary}
+~\\
+We now prove a result motivated by applying equational reasoning techniques to program-hypotheses pairs. 
 
 \begin{theorem}
-    If $P$ and $H$ are both stable, $P$ is flat-terminating, and $H$ is terminating and $P$-normal, then $S := P \cup H$ is terminating.
+    If $P$ and $H$ are both stable, $P$ is flat-terminating, and $H$ is terminating, $P$-normal and closed, then $S := P \cup H$ is terminating.
 \end{theorem}
 
 \begin{proof}
-    By Theorem \ref{thm:dep_pair_mod}, our result follows from the conjunction of the following: \begin{enumerate}
+    By Theorem \ref{thm:mod_span_term}, our result follows from the conjunction of the following: \begin{enumerate}
         \item There are no infinite $H/S$-chains.
         \item All of $S$'s spanning chains span from $P$ to $H$.
         \item There are no infinite $P/S$-chains.
     \end{enumerate}
-    (1) and (2) follow trivially from the fact that $H$ is terminating and $P$-normal. It remains to show (3). By Corollary \ref{thm:flat_term_stable}, and from the fact that $S$ is also clearly stable, we have that there are no infinite $P^\flat/S$-chains. By Lemma \ref{thm:flat_termination_overapprox}, we deduce that there are no infinite $P/S$-chains. 
+    From the fact that $H$ is $P$-normal and closed, we can deduce that, for each $l \approx r \in H$, $r\theta$ is in $P$-normal form for all substitutions $\theta$, which leads to (1). We can also deduce that each $\dpair{s_H}{r_H}_H \dpair{s_P}{r_P}_P \in DP(H) \times DP(P)$ cannot form a chain under $S$, which leads to (2). 
+    
+    It remains to show (3). By Corollary \ref{thm:flat_term_stable}, and from the fact that $S$ is the union of two stable TRSs (and is therefore also stable), we have that there are no infinite $P^\flat/S$-chains. By Lemma \ref{thm:flat_termination_overapprox}, we deduce that there are no infinite $P/S$-chains. 
 \end{proof}
 
 
 
-\section{Existing Results in the Relative Chain Framework}
+% \section{Existing Results in the Relative Chain Framework}
 
-We begin with a couple of definitions:
-\begin{definition}
-    An equation $M \approx N$ is \emph{collapsing} iff $N$ is a variable. A TRS is \emph{non-collapsing} iff all of its equations are non-collapsing. 
-\end{definition}
-\begin{definition}
-    A TRS $R$ over $T(\Sigma, V)$ is \emph{$\mathcal{C}_\epsilon$-terminating} iff $R \cup \{\chi(x, y) \approx x, \chi (x, y)\approx y\}$ is terminating, where $\chi \in \Sigma^{(2)}_{con}$ does not appear in $R$.   
-\end{definition}
+% We begin with a couple of definitions:
+% \begin{definition}
+%     An equation $M \approx N$ is \emph{collapsing} iff $N$ is a variable. A TRS is \emph{non-collapsing} iff all of its equations are non-collapsing. 
+% \end{definition}
+% \begin{definition}
+%     A TRS $R$ over $T(\Sigma, V)$ is \emph{$\mathcal{C}_\epsilon$-terminating} iff $R \cup \{\chi(x, y) \approx x, \chi (x, y)\approx y\}$ is terminating, where $\chi \in \Sigma^{(2)}_{con}$ does not appear in $R$.   
+% \end{definition}
 
-We attempt to demonstrate the versatility and applicability of our framework by applying it to prove the following existing result:
-\begin{theorem}[Ohlebusch \cite{ohlebusch1994modular}]
-    Consider two disjoint and terminating TRSs $R_1$ and $R_2$. If $R_1$ is $\mathcal{C}_\epsilon$-terminating or $R_2$ is non-collapsing, then $S := R_1 \cup R_2$ is terminating.
-    % If $S := R_1 \cup R_2$ is nonterminating, then $R_1$ is not $\mathcal{C}_\epsilon$-terminating and $R_2$ is collapsing (or vice versa).
-\end{theorem}
+% We attempt to demonstrate the versatility and applicability of our framework by applying it to prove the following existing result:
+% \begin{theorem}[Ohlebusch \cite{ohlebusch1994modular}]
+%     Consider two disjoint and terminating TRSs $R_1$ and $R_2$. If $R_1$ is $\mathcal{C}_\epsilon$-terminating or $R_2$ is non-collapsing, then $S := R_1 \cup R_2$ is terminating.
+%     % If $S := R_1 \cup R_2$ is nonterminating, then $R_1$ is not $\mathcal{C}_\epsilon$-terminating and $R_2$ is collapsing (or vice versa).
+% \end{theorem}
 
-\begin{proof}
-    We have two cases: \begin{enumerate}
-        \item $R_1$ is $\mathcal{C}_\epsilon$-terminating.
-        \item $R_2$ is non-collapsing.
-    \end{enumerate}
-    We prove termination in each case separately.
+% \begin{proof}
+%     We have two cases: \begin{enumerate}
+%         \item $R_1$ is $\mathcal{C}_\epsilon$-terminating.
+%         \item $R_2$ is non-collapsing.
+%     \end{enumerate}
+%     We prove termination in each case separately.
 
 
-\end{proof}
+% \end{proof}
 
 
 \renewcommand\em{\it}
