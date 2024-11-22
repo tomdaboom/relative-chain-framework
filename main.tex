@@ -8,7 +8,7 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 
-\newtheorem{theorem}{Theorem}[section]
+\newtheorem{theorem}{Theorem}%[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
 
@@ -71,7 +71,7 @@ An equation $M \approx N$ is \emph{stable} iff $M$ is headed by a defined functi
 
 The dependency pair framework \cite{arts2000dependency} allows us to analyse the interdependencies between functions more precisely than by simply analysing the rules of a TRS. A dependency pair of a TRS $R$ is written $\dpair{M}{N}_R \in T(\Sigma \cup \Sigma^\sharp, V)^2$. We define $\Sigma^\sharp$ such that, for each $f \in \Sigma$, we have $F \in \Sigma^\sharp$. These pairs are constructed as follows:
 \begin{definition}
-    Consider some TRS $R$, and assume that $f(s_1, \cdots, s_n) \approx C[g(s_1, \cdots, s_n)] \in R$ for some context $C[\cdot]$ and function symbols $f, g \in \Sigma_{def}$. This induces the \emph{dependency pair} $\dpair{F (s_1, \cdots, s_n)}{G(s_1, \cdots, s_n)}_R $, where $F, G \in \Sigma^\sharp$. $DP(R)$ is defined to be the set of all dependency pairs induced by $R$.
+    Consider some TRS $R$, and assume that $f(s_1, \cdots, s_n) \approx C[g(t_1, \cdots, t_m)] \in R$ for some context $C[\cdot]$ and function symbols $f, g \in \Sigma_{def}$. This induces the \emph{dependency pair} $\dpair{F (s_1, \cdots, s_n)}{G(t_1, \cdots, t_m)}_R $, where $F, G \in \Sigma^\sharp$. $DP(R)$ is defined to be the set of all dependency pairs induced by $R$.
 \end{definition}
 The fact that each dependency pair is induced by exactly one equational constraint leads trivially to the following result:
 \begin{lemma} \label{thm:dep_pair_mod}
@@ -162,7 +162,7 @@ The following trivial corollaries demonstrate the power of this result:
     A flat-terminating TRS $P$ and a stable TRS $Q$ induce no infinite $P^\flat/Q$-chains.
 \end{corollary}
 ~\\
-We now prove a result motivated by applying equational reasoning techniques to program-hypotheses pairs. We presume that our program $P$ is some stable, flat-terminating TRS, and we also assert that a set of hypotheses is some other stable TRS over a collection of universally quantified variables. These variables are represented as a subset of constructors $\Sigma_\forall \subseteq \Sigma_{con}$. This means that, during a reduction sequence, we can substitute any variable with a universally-quantified one, but not vice-versa. Hence, a valid hypothesis is closed. This leads us to the following result concerning the union of programs and hypotheses:
+We now prove a result motivated by applying equational reasoning techniques to program-hypotheses pairs. We presume that our program $P$ is some stable, flat-terminating TRS, and we also assert that a set of hypotheses $H$ is some other stable, $P$-normal TRS over a collection of universally quantified variables. These variables are represented as a subset of constructors $\Sigma_\forall \subseteq \Sigma_{con}$. It follows that, during a reduction sequence, we can substitute any variable with a universally-quantified one, but not vice-versa. Hence, a valid hypothesis is closed. This leads us to the following result concerning the union of programs and hypotheses:
 \begin{theorem}
     If $P$ and $H$ are both stable, $P$ is flat-terminating, and $H$ is terminating, $P$-normal and closed, then $S := P \cup H$ is terminating.
 \end{theorem}
