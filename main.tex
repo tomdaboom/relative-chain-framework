@@ -151,12 +151,12 @@ The following definition is based on the estimation dependency pair graphs intro
         (s_{i+1} \theta)|_p  &\text{if}~ y \in X_i^\flat ~\text{and}~ \theta(y) \rightarrow^+_S (s_{i+1}\theta)|_p \\
         \theta(y) &\text{otherwise}
     \end{cases}$$
-    Note that our construction ensures $t_i\sigma_i = s_{i+1}\sigma_i$ for all $i$. Our global substitution $\sigma := \sigma_1 \circ \sigma_2 \circ \cdots$ is obtained by simply taking the composition of each $\sigma_i$. 
+    Note that our construction ensures $t_i\sigma_i = s_{i+1}\sigma_i$ for all $i$. Our global substitution $\sigma := \sigma_1 \circ \sigma_2 \circ \cdots$ is obtained by simply taking the composition of each $\sigma_i$.
     
     It remains to show that $\sigma$ is a valid substitution that rewrites only finitely many variables, even when our chain is infinite. Observe that some suffix of any infinite chain must consist of the same sequence of flattened pairs repeated infinitely many times. Hence, we only have finitely many distinct $\sigma_i$; given that each of these has finite domain, their composition must also have finite domain. 
 \end{proof}
 
-The following trivial corollaries demonstrate the power of this result:
+The following trivial corollaries demonstrate the power of this result. The first of these tells us that whether a given TRS is flat-terminating is decidable \cite{arts2000dependency}. The second of these emphasises the fact that a flat-terminating TRS has no infinite chains relative to any other TRS, which is enormously helpful for demonstrating modular termination.  
 \begin{corollary} \label{thm:flat_chain_equality}
     A TRS $P$ is flat-terminating iff it induces no infinite $P^\flat/\!\!=$-chains.  
 \end{corollary}
@@ -164,7 +164,7 @@ The following trivial corollaries demonstrate the power of this result:
     A flat-terminating TRS $P$ and a stable TRS $Q$ induce no infinite $P^\flat/Q$-chains.
 \end{corollary}
 ~\\
-We now prove a result motivated by applying equational reasoning techniques to program-hypotheses pairs. We presume that our program $P$ is some stable, flat-terminating TRS, and we also assert that a set of hypotheses $H$ is some other stable, $P$-normal TRS over a collection of universally quantified variables. These variables are represented as a subset of constructors $\Sigma_\forall \subseteq \Sigma_{con}$. It follows that, during a reduction sequence, we can substitute any variable with a universally-quantified one, but not vice-versa. Hence, a valid hypothesis is closed. This leads us to the following result concerning the union of programs and hypotheses:
+We now prove a result motivated by applying equational reasoning techniques to program-hypotheses pairs. We presume that our program $P$ is some stable, flat-terminating TRS, and we also assert that a set of hypotheses $H$ is some other stable, $P$-normal TRS over a collection of universally quantified variables. These variables are represented as a subset of constructors $\Sigma_\forall \subseteq \Sigma_{con}$. The idea here is that we can substitute any variable with a universally-quantified one, but not vice-versa. Hence, a valid hypothesis is closed. This leads us to the following result concerning the union of programs and hypotheses:
 \begin{theorem}
     If $P$ and $H$ are both stable, $P$ is flat-terminating, and $H$ is terminating, $P$-normal and closed, then $S := P \cup H$ is terminating.
 \end{theorem}
@@ -175,7 +175,7 @@ We now prove a result motivated by applying equational reasoning techniques to p
         \item All of $S$'s spanning chains span from $P$ to $H$.
         \item There are no infinite $P/S$-chains.
     \end{enumerate}
-    From the fact that $H$ is $P$-normal and closed, we can deduce that, for each $l \approx r \in H$ and for any substitution $\theta$, $r\theta$ is in $P$-normal form, which leads to (1). We can also deduce that each $\dpair{s_H}{r_H}_H \dpair{s_P}{r_P}_P \in DP(H) \times DP(P)$ cannot form a chain under $S$, which leads to (2). By Corollary \ref{thm:flat_term_stable}, and from the fact that $S$ is the union of two stable TRSs (and is therefore also stable), we have that there are no infinite $P^\flat/S$-chains. By Lemma \ref{thm:flat_termination_overapprox}, we deduce that there are no infinite $P/S$-chains, and have thus shown (3). 
+    From the fact that $H$ is $P$-normal and closed, we can deduce that, for each $l \approx r \in H$ and for any substitution $\theta$, $r\theta$ is in $P$-normal form. This, combined with $H$'s termination, leads to (1). We can also deduce that each $\dpair{s_H}{r_H}_H \dpair{s_P}{r_P}_P \in DP(H) \times DP(P)$ cannot form a chain under $S$, which leads to (2). By Corollary \ref{thm:flat_term_stable}, and from the fact that $S$ is the union of two stable TRSs (and is therefore also stable), we have that there are no infinite $P^\flat/S$-chains. By Lemma \ref{thm:flat_termination_overapprox}, we deduce that there are no infinite $P/S$-chains, and have thus shown (3). 
 \end{proof}
 
 
@@ -190,10 +190,26 @@ We begin by adapting a result from \cite{arts2000dependency} concerning the exis
 This theorem will be of use in our demonstration that flat termination is equivalent to \emph{size-change termination} \cite{lee2001sizechange,thiemann2005sizechange}.
 
 \begin{definition}[Size-change termination]
-    Consider some functional program $P \subseteq T(\Sigma_{con} \cup \Sigma_{def}, V)^2$. For each rule $f(s_1, \cdots, s_n) \approx N$, and for each function symbol $g$ such that $N = C[g(t_1, \cdots, t_m)]$ for some context $C$, we define a \emph{size-change graph} $G_{f,g}$ with respect to some ordering on closed constructor terms $\succ ~ \subseteq T(\Sigma_{con}, \emptyset)^2$. 
+    Consider some functional program $P \subseteq T(\Sigma_{con} \cup \Sigma_{def}, V)^2$. For each rule $f(s_1, \cdots, s_n) \approx N$, and for each function symbol $g$ such that $N = C[g(t_1, \cdots, t_m)]$ for some context $C$, we define a directed bipartite \emph{size-change graph} $G_f^g := (L, R, E)$ with respect to some ordering on closed constructor terms $\succ ~ \subseteq T(\Sigma_{con}, \emptyset)^2$. 
 
-    $G_{f,g} = (L = \{1_f, \cdots, n_f\}, R = \{1_g, \cdots, m_g\}, E \subseteq L \times R \times \{ \succ, \succsim \} )$ is a bipartite graph, where each edge $e \in E$ is labelled either with $\succ$ or $\succsim$. For each pair of arguments $s_i$ and $t_j$, if $s_i \succ t_j$, we have $(i_f, j_g, \succ) \in E$. Otherwise, if $s_i \succsim t_j$, we have $(i_f, j_g, \succsim) \in E$.
+    $G_f^g$ contains a vertex for each argument of $f$ and $g$ (i.e. $L = \{1_f, \cdots, n_f\}$ and $R = \{1_g, \cdots, m_g\}$). Each of $G_f^g$'s directed edges $e \in L \times R \times \{\succ, \succsim\}$ is labelled either with $\succ$ or $\succsim$. For each pair of arguments $s_i$ and $t_j$, if $s_i \succ t_j$, we have $(i_f, j_g, \succ) \in E$. Otherwise, if $s_i \succsim t_j$, we have $(i_f, j_g, \succsim) \in E$.
+
+    A \emph{call sequence} is a (possibly infinite) sequence of size-change graphs $G_f^g, G_g^h, G_h^i \cdots$. A \emph{thread} is any path through a call sequence. $P$ is defined to be \emph{size-change terminating} iff some infinite thread of every infinite call sequence contains an edge labelled $\succ$.
 \end{definition}
+Observe that, like flat termination, this formalism of size-change termination is also stronger than termination. If a program is size-change terminating, then any possible infinite reduction sequence infinitely decrements some closed constructor term with respect to $\succ$, which violates $\succ$'s well-foundedness.
+
+\begin{theorem}
+    A functional program $P$ is flat-terminating iff it is size-change terminating.
+\end{theorem}
+
+\begin{proof}
+    ($\Leftarrow$) Assume that $P$ is size-change terminating. Hence, some thread $T$ of any infinite call sequence $G_{f_1}^{f_2}, G_{f_2}^{f_3}, \cdots$ must contain an edge labelled $\succ$ in $G_{f_k}^{f_{k+1}}$ for some $k$. We consider the infinite sequence of flat pairs $\langle s_1, t_1 \rangle_P^\flat \langle s_2, t_2\rangle_P^\flat \cdots$ with $s_i|_\varepsilon = F_i$, and show by contradiction that it cannot form a flat chain. 
+    
+    Assume that it does form a flat chain; hence, without loss of generality (by Theorem \ref{thm:flat_chain_equality}), there must exist some substitution $\sigma$ satisfying $t_i \sigma = s_{i+1}\sigma$ for each $i$. 
+    \\~\\
+    ($\Rightarrow$) Assume that $P$ is size-change terminating. We demonstrate that 
+\end{proof}
+
 
 % \section{Existing Results in the Relative Chain Framework}
 
