@@ -64,13 +64,15 @@ A reduction system $(X, \rightarrow)$ consists of a set $X$ equipped with a bina
 Here, we will consider TRSs defined by a set of equations $R \subseteq T(\Sigma, V) \times T(\Sigma, V)$. Note that our equations are presumed to be \emph{oriented}, meaning that $M \approx N \in R$ does not imply that $N \approx M \in R$. We also assume that $Var(M) \supseteq Var(N)$ for each $M \approx N \in R$. We define $\rightarrow_R$ such that, for each $M \approx N \in R$, and for all contexts $C[\cdot]$ and substitutions $\theta$, $C[M\theta] \rightarrow_R C[N\theta]$. 
 
 An equation $M \approx N$ is \emph{stable} iff $M$ is headed by a defined function symbol. A TRS is stable iff all of its equations are stable. A TRS is a \emph{functional program} iff it is stable, and for each rule $f(x_1, \cdots, x_n) \approx N$, each $x_i$ contains no defined function symbols. We say that an equation $M \approx N$ is \emph{$Q$-normal} (where $Q$ is some TRS) iff $N$ is in $Q$-normal form. A TRS is $Q$-normal iff all of its rules are $Q$-normal.  
+\\~\\
+A strict \emph{reduction order} $\succ ~ \subseteq T(\Sigma, V)^2$ is an order on terms that is closed under substitutions.  $\succsim$ is defined to be the reflexive closure of $\succ$. A reduction order is also \emph{monotonic} iff it is closed under contexts. $\succ$ is \emph{well-founded} iff every set $K \subseteq T(\Sigma, V)$ has a minimum under $\succ$ (i.e. $\forall K \subseteq T(\Sigma, V), \exists x \in K, \forall y \in K, x \precsim y$). 
 
 
 
 \subsection{The Dependency Pair Framework}
 
 The dependency pair framework \cite{arts2000dependency} allows us to analyse the interdependencies between functions more precisely than by simply analysing the rules of a TRS. A dependency pair of a TRS $R$ is written $\dpair{M}{N}_R \in T(\Sigma \cup \Sigma^\sharp, V)^2$. We define $\Sigma^\sharp$ such that, for each $f \in \Sigma$, we have $F \in \Sigma^\sharp$. These pairs are constructed as follows:
-\begin{definition}
+\begin{definition}[Dependency pairs]
     Consider some TRS $R$, and assume that $f(s_1, \cdots, s_n) \approx C[g(t_1, \cdots, t_m)] \in R$ for some context $C[\cdot]$ and function symbols $f, g \in \Sigma_{def}$. This induces the \emph{dependency pair} $\dpair{F (s_1, \cdots, s_n)}{G(t_1, \cdots, t_m)}_R $, where $F, G \in \Sigma^\sharp$. $DP(R)$ is defined to be the set of all dependency pairs induced by $R$.
 \end{definition}
 The fact that each dependency pair is induced by exactly one equational constraint leads trivially to the following result:
@@ -78,8 +80,8 @@ The fact that each dependency pair is induced by exactly one equational constrai
     $DP(R_1 \cup R_2) = DP(R_1) \cup DP(R_2)$
 \end{lemma}
 In order to reason about the termination of a TRS through the analysis of its dependency pairs, we need to introduce the following definition, which allows us to connect reduction sequences of our TRSs to sequences of dependency pairs. Theorem \ref{thm:no_infinite_chains} then asserts that termination can be equivalently characterised by the non-existence of infinite chains.
-\begin{definition}
-    Consider some fixed TRS $R$. An \emph{R-chain} is a sequence of dependency pairs $\dpair{s_1}{t_1}_R \dpair{s_2}{t_2}_R \cdots$, along with a substitution $\theta$, such that $t_i \theta \rightarrow_R^* s_{i+1}\theta$ for all $i$.
+\begin{definition}[Chains]
+    Consider some fixed TRS $R$. An \emph{$R$-chain} is a sequence of dependency pairs $\dpair{s_1}{t_1}_R \dpair{s_2}{t_2}_R \cdots$, along with a substitution $\theta$, such that $t_i \theta \rightarrow_R^* s_{i+1}\theta$ for all $i$.
 \end{definition}
 \begin{theorem}[Arts and Giesl \cite{arts2000dependency}]\label{thm:no_infinite_chains}
     A TRS is terminating iff it does not induce an infinite chain.
@@ -89,12 +91,12 @@ In order to reason about the termination of a TRS through the analysis of its de
 
 In order to analyse the termination of the union of two TRSs, we consider the union of their dependency pairs. The following definition generalises the notion of a chain, separating rewrite system used in the intermediate reduction steps from the rewrite system that induces the dependency pairs in the chain.
 
-\begin{definition}
-    Consider two TRSs $R$ and $S$. A sequence of $R$'s dependency pairs $\dpair{s_1}{t_1}_R \dpair{s_2}{t_2}_R \cdots$ forms an \emph{R/S-chain} iff there exists some substitution $\theta$ satisfying $t_i \theta \rightarrow^*_S s_{i+1}\theta$ for each $i$. 
+\begin{definition}[Relative chains]
+    Consider two TRSs $R$ and $S$. A sequence of $R$'s dependency pairs $\dpair{s_1}{t_1}_R \dpair{s_2}{t_2}_R \cdots$ forms an \emph{$R/S$-chain} iff there exists some substitution $\theta$ satisfying $t_i \theta \rightarrow^*_S s_{i+1}\theta$ for each $i$. 
 \end{definition}
 
 We also define what it means for a chain over the union of two rewrite systems to alternate between applying rules in each of the systems:
-\begin{definition}
+\begin{definition}[Spanning chains]
     Consider some TRS $S := R_1 \cup R_2$, which is the union of two other TRSs. An $S$-chain is \emph{spanning} iff it is of the form $\cdots p_1 p_2 \cdots$ where $p_1 \in DP(R_1)$ and $p_2 \in DP(R_2)$, or vice versa. In this case, we say that this chain spans \emph{from} $R_1$ \emph{to} $R_2$.
 \end{definition}
 The following theorem characterises modular termination in terms of sub-relative termination and the nonexistence of two-way spanning chains:
@@ -121,10 +123,10 @@ The following theorem characterises modular termination in terms of sub-relative
 
 The following definition is based on the estimation dependency pair graphs introduced in \cite{arts2000dependency}. Our contribution focuses primarily on studying a termination criterion dependent on the non-existence of certain kinds of cycles in the estimated dependency graph.
 
-\begin{definition}
+\begin{definition}[Flat termination]
     Consider some TRS $P$ over $T(\Sigma, V)$, which induces the dependency pairs $\dpair{\cdot}{\cdot}_P$ over $T(\Sigma \cup \Sigma^\sharp, V)$. Also assume that we have access to an infinite set of unused \emph{flat variables} $V^\flat \subseteq V$.
     
-    We define a set of \emph{flat dependency pairs} $\dpair{\cdot}{\cdot}^\flat_P \subseteq T(\Sigma_{con} \cup \Sigma^\sharp, V^\flat)^2$, where each rule is obtained by \emph{flattening} a dependency pair. For a dependency pair $\dpair{s}{G(t_1 , \cdots, t_n)}_P$, its flattening is written $\dpair{s}{G( t^\flat_1, \cdots, t_n^\flat)}^\flat_P$. A term $t$'s flattening $t^\flat$ is computed recursively as follows (where $x^\flat \in V^\flat$ is an arbitrary unused flat variable):
+    We define a set of \emph{flat dependency pairs} $DP^\flat(P) \subseteq T(\Sigma_{con} \cup \Sigma^\sharp, V^\flat)^2$, where each rule is obtained by \emph{flattening} a dependency pair. For a dependency pair $\dpair{s}{G(t_1 , \cdots, t_n)}_P$, its flattening is written $\dpair{s}{G( t^\flat_1, \cdots, t_n^\flat)}^\flat_P$. A term $t$'s flattening $t^\flat$ is computed recursively as follows (where $x^\flat \in V^\flat$ is an arbitrary unused flat variable):
     \begin{itemize}
         \item If $t \in \Sigma_{con}$, then $t^\flat := t$
         \item If $t \in V$, or $t = f (b_1, \cdots, b_k)$ where $f \in \Sigma_{def}$, then $t^\flat := x^\flat$.
@@ -177,6 +179,21 @@ We now prove a result motivated by applying equational reasoning techniques to p
 \end{proof}
 
 
+\section{Flat Termination as Size-Change Termination}
+We begin by adapting a result from \cite{arts2000dependency} concerning the existence of program orderings.
+\begin{theorem}
+    A TRS $P$ is flat-terminating iff there exists a well-founded monotonic reduction order $\succ$ that satisfies \begin{itemize}
+        \item $l \succsim r$ for each $l \approx r \in P$
+        \item $s \succ t$ for each $\langle s, t \rangle^\flat_P \in DP^\flat(P)$
+    \end{itemize}
+\end{theorem}
+This theorem will be of use in our demonstration that flat termination is equivalent to \emph{size-change termination} \cite{lee2001sizechange,thiemann2005sizechange}.
+
+\begin{definition}[Size-change termination]
+    Consider some functional program $P \subseteq T(\Sigma_{con} \cup \Sigma_{def}, V)^2$. For each rule $f(s_1, \cdots, s_n) \approx N$, and for each function symbol $g$ such that $N = C[g(t_1, \cdots, t_m)]$ for some context $C$, we define a \emph{size-change graph} $G_{f,g}$ with respect to some ordering on closed constructor terms $\succ ~ \subseteq T(\Sigma_{con}, \emptyset)^2$. 
+
+    $G_{f,g} = (L = \{1_f, \cdots, n_f\}, R = \{1_g, \cdots, m_g\}, E \subseteq L \times R \times \{ \succ, \succsim \} )$ is a bipartite graph, where each edge $e \in E$ is labelled either with $\succ$ or $\succsim$. For each pair of arguments $s_i$ and $t_j$, if $s_i \succ t_j$, we have $(i_f, j_g, \succ) \in E$. Otherwise, if $s_i \succsim t_j$, we have $(i_f, j_g, \succsim) \in E$.
+\end{definition}
 
 % \section{Existing Results in the Relative Chain Framework}
 
