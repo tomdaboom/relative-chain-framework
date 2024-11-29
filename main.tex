@@ -24,6 +24,11 @@
 
 \newcommand{\agap}{\hspace{0.25em}}
 \newcommand{\dpair}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\subterm}{\sqsubset}
+\newcommand{\subtermeq}{\sqsubseteq}
+\newcommand{\supterm}{\sqsupset}
+\newcommand{\suptermeq}{\sqsupseteq}
+
 
 \usepackage[backend=biber]{biblatex}
 \addbibresource{./ref.bib}
@@ -65,7 +70,9 @@ Here, we will consider TRSs defined by a set of equations $R \subseteq T(\Sigma,
 
 An equation $M \approx N$ is \emph{stable} iff $M$ is headed by a defined function symbol. A TRS is stable iff all of its equations are stable. A TRS is a \emph{functional program} iff it is stable, and for each rule $f(x_1, \cdots, x_n) \approx N$, each $x_i$ contains no defined function symbols. We say that an equation $M \approx N$ is \emph{$Q$-normal} (where $Q$ is some TRS) iff $N$ is in $Q$-normal form. A TRS is $Q$-normal iff all of its rules are $Q$-normal.  
 \\~\\
-A strict \emph{reduction order} $\succ ~ \subseteq T(\Sigma, V)^2$ is an order on terms that is closed under substitutions.  $\succsim$ is defined to be the reflexive closure of $\succ$. A reduction order is also \emph{monotonic} iff it is closed under contexts. $\succ$ is \emph{well-founded} iff every set $K \subseteq T(\Sigma, V)$ has a minimum under $\succ$ (i.e. $\forall K \subseteq T(\Sigma, V), \exists x \in K, \forall y \in K, x \precsim y$). 
+A strict \emph{reduction order} $\succ ~ \subseteq T(\Sigma, V)^2$ is an order on terms that is closed under substitutions.  $\succsim$ is defined to be the reflexive closure of $\succ$. A reduction order is also \emph{monotonic} iff it is closed under contexts. $\succ$ is \emph{well-founded} iff every set $K \subseteq T(\Sigma, V)$ has a minimum under $\succ$ (i.e. $\forall K \subseteq T(\Sigma, V), \exists x \in K, \forall y \in K, x \precsim y$).
+
+One particular ordering that will be of use is the subterm ordering $\subterm$, which is defined as follows: $M \subterm N$ iff $N|_p = M$ for some $p \in Pos(N)$.
 
 
 
@@ -187,28 +194,44 @@ We begin by adapting a result from \cite{arts2000dependency} concerning the exis
         \item $s \succ t$ for each $\langle s, t \rangle^\flat_P \in DP^\flat(P)$
     \end{itemize}
 \end{theorem}
-This theorem will be of use in our demonstration that flat termination is equivalent to \emph{size-change termination} \cite{lee2001sizechange,thiemann2005sizechange}.
+This theorem will be of use in our demonstration that flat termination is equivalent to \emph{size-change termination}.
 
-\begin{definition}[Size-change termination]
-    Consider some functional program $P \subseteq T(\Sigma_{con} \cup \Sigma_{def}, V)^2$. For each rule $f(s_1, \cdots, s_n) \approx N$, and for each function symbol $g$ such that $N = C[g(t_1, \cdots, t_m)]$ for some context $C$, we define a directed bipartite \emph{size-change graph} $G_f^g := (L, R, E)$ with respect to some ordering on closed constructor terms $\succ ~ \subseteq T(\Sigma_{con}, \emptyset)^2$. 
+\begin{definition}[Size-change termination \cite{lee2001sizechange,thiemann2005sizechange}]
+    Consider some functional program $P \subseteq T(\Sigma_{con} \cup \Sigma_{def}, V)^2$. For each rule $f(s_1, \cdots, s_n) \approx N$, and for each function symbol $g$ such that $N = C[g(t_1, \cdots, t_m)]$ for some context $C$, we define a directed bipartite \emph{size-change graph} $G_f^g := (L, R, E)$ with respect to some ordering on closed constructor terms $\succ ~ \subseteq T(\Sigma_{con}, \emptyset)^2$.
 
     $G_f^g$ contains a vertex for each argument of $f$ and $g$ (i.e. $L = \{1_f, \cdots, n_f\}$ and $R = \{1_g, \cdots, m_g\}$). Each of $G_f^g$'s directed edges $e \in L \times R \times \{\succ, \succsim\}$ is labelled either with $\succ$ or $\succsim$. For each pair of arguments $s_i$ and $t_j$, if $s_i \succ t_j$, we have $(i_f, j_g, \succ) \in E$. Otherwise, if $s_i \succsim t_j$, we have $(i_f, j_g, \succsim) \in E$.
 
-    A \emph{call sequence} is a (possibly infinite) sequence of size-change graphs $G_f^g, G_g^h, G_h^i \cdots$. A \emph{thread} is any path through a call sequence. $P$ is defined to be \emph{size-change terminating} iff some infinite thread of every infinite call sequence contains an edge labelled $\succ$.
+    We define the concatenation of two size-change graphs $G_f^g \circ G_g^h$ to be the graph obtained by .
+
+   $P$ is defined to be \emph{size-change terminating} iff some infinite path of every concatenation of an infinite sequence of size-change graphs contains infinitely many edges labelled $\succ$.
 \end{definition}
 Observe that, like flat termination, this formalism of size-change termination is also stronger than termination. If a program is size-change terminating, then any possible infinite reduction sequence infinitely decrements some closed constructor term with respect to $\succ$, which violates $\succ$'s well-foundedness.
 
+\begin{lemma} \label{thm:size_change_max_multi}
+    A program $P$ is size-change terminating iff any maximal multigraph contains an edge labelled $\succ$.
+\end{lemma}
+
 \begin{theorem}
-    A functional program $P$ is flat-terminating iff it is size-change terminating.
+    A functional program $P$ is size-change terminating (with respect to the closed constructor subterm ordering $\subterm$) iff it is flat terminating.
 \end{theorem}
 
 \begin{proof}
-    ($\Leftarrow$) Assume that $P$ is size-change terminating. Hence, some thread $T$ of any infinite call sequence $G_{f_1}^{f_2}, G_{f_2}^{f_3}, \cdots$ must contain an edge labelled $\succ$ in $G_{f_k}^{f_{k+1}}$ for some $k$. We consider the infinite sequence of flat pairs $\langle s_1, t_1 \rangle_P^\flat \langle s_2, t_2\rangle_P^\flat \cdots$ with $s_i|_\varepsilon = F_i$, and show by contradiction that it cannot form a flat chain. 
+    ($\Rightarrow$) Consider some size-change terminating program $P$. By Lemma \ref{thm:size_change_max_multi}, any maximal size-change multigraph $G = G_1^2; G_2^3; \cdots ; G_{n-1}^1$ of $P$ must contain an edge labelled $\succ$. 
+
+    Firstly, we observe that $G$ corresponds to a cycle of dependency pairs. We now observe that  
     
-    Assume that it does form a flat chain; hence, without loss of generality (by Theorem \ref{thm:flat_chain_equality}), there must exist some substitution $\sigma$ satisfying $t_i \sigma = s_{i+1}\sigma$ for each $i$. 
+    \emph{finish this direction (but it's fairly trivial) -- infinite edge traversal violates well-foundedness of $\subterm$}
     \\~\\
-    ($\Rightarrow$) Assume that $P$ is size-change terminating. We demonstrate that 
+    ($\Leftarrow$) Consider some flat terminating program $P$, and presume that it is not size-change terminating with respect to $\subterm$. Consider any finite flat chain $C := \dpair{F(s_1, \cdots, s_n)}{g_1}_P^\flat \cdots \dpair{g_l}{ F(t_1, \cdots, t_n)}_P^\flat$. From $P$'s flat termination, we can deduce that $C^\omega$ cannot also be a flat chain. Hence, for any substitution $\sigma$, we have $t_i \sigma \neq s_i \sigma$ for each $i \in [n]$. 
+
+    From the fact that $P$ is not size-change terminating, we also know that $t_i \sigma \not \subterm s_i \sigma$ for each $i \in [n]$. We also know that each $s_i$ and $t_i$ must be flat; hence, $t_i\sigma \supterm s_i\sigma$. This violates $P$'s termination (implied by its flat termination), which is contradictory.  
 \end{proof}
+
+% ($\Leftarrow$) Assume that $P$ is size-change terminating. Hence, some thread $T$ of any infinite call sequence $G_{f_1}^{f_2}, G_{f_2}^{f_3}, \cdots$ must contain an edge labelled $\succ$ in $G_{f_k}^{f_{k+1}}$ for some $k$. We consider the infinite sequence of flat pairs $\langle s_1, t_1 \rangle_P^\flat \langle s_2, t_2\rangle_P^\flat \cdots$ with $s_i|_\varepsilon = F_i$, and show by contradiction that it cannot form a flat chain. 
+    
+%     Assume that it does form a flat chain; hence, without loss of generality (by Theorem \ref{thm:flat_chain_equality}), there must exist some substitution $\sigma$ satisfying $t_i \sigma = s_{i+1}\sigma$ for each $i$. 
+%     \\~\\
+%     ($\Rightarrow$) Assume that $P$ is size-change terminating. We demonstrate that 
 
 
 % \section{Existing Results in the Relative Chain Framework}
