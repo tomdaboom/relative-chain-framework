@@ -223,8 +223,10 @@ Observe that, like flat termination, this formalism of size-change termination i
     \emph{finish this direction (but it's fairly trivial) -- infinite edge traversal violates well-foundedness of $\subterm$}
     \\~\\
     ($\Leftarrow$) Consider some flat terminating program $P$, and presume that it is not size-change terminating with respect to $\subterm$. Consider any finite flat chain $C := \dpair{F(s_1, \cdots, s_n)}{g_1}_P^\flat \cdots \dpair{g_l}{ F(t_1, \cdots, t_n)}_P^\flat$. From $P$'s flat termination, we can deduce that $C^\omega$ cannot also be a flat chain. Hence, for any substitution $\sigma$, we have $t_i \sigma \neq s_i \sigma$ for each $i \in [n]$. 
+    
+    \emph{finish this direction too -- LHS variable thing on ur whiteboard}
 
-    From the fact that $P$ is not size-change terminating, we also know that $t_i \sigma \not \subterm s_i \sigma$ for each $i \in [n]$. We also know that each $s_i$ and $t_i$ must be flat; hence, $t_i\sigma \supterm s_i\sigma$. This violates $P$'s termination (implied by its flat termination), which is contradictory.  
+    % From the fact that $P$ is not size-change terminating, we also know that $t_i \sigma \not \subterm s_i \sigma$ for each $i \in [n]$. We also know that each $s_i$ and $t_i$ must be flat; hence, $t_i\sigma \supterm s_i\sigma$. This violates $P$'s termination (implied by its flat termination), which is contradictory.  
 \end{proof}
 
 % ($\Leftarrow$) Assume that $P$ is size-change terminating. Hence, some thread $T$ of any infinite call sequence $G_{f_1}^{f_2}, G_{f_2}^{f_3}, \cdots$ must contain an edge labelled $\succ$ in $G_{f_k}^{f_{k+1}}$ for some $k$. We consider the infinite sequence of flat pairs $\langle s_1, t_1 \rangle_P^\flat \langle s_2, t_2\rangle_P^\flat \cdots$ with $s_i|_\varepsilon = F_i$, and show by contradiction that it cannot form a flat chain. 
