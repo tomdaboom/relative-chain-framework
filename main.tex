@@ -68,7 +68,10 @@ A reduction system $(X, \rightarrow)$ consists of a set $X$ equipped with a bina
 
 Here, we will consider TRSs defined by a set of equations $R \subseteq T(\Sigma, V) \times T(\Sigma, V)$. Note that our equations are presumed to be \emph{oriented}, meaning that $M \approx N \in R$ does not imply that $N \approx M \in R$. We also assume that $Var(M) \supseteq Var(N)$ for each $M \approx N \in R$. We define $\rightarrow_R$ such that, for each $M \approx N \in R$, and for all contexts $C[\cdot]$ and substitutions $\theta$, $C[M\theta] \rightarrow_R C[N\theta]$. 
 
-An equation $M \approx N$ is \emph{stable} iff $M$ is headed by a defined function symbol. A TRS is stable iff all of its equations are stable. A TRS is a \emph{functional program} iff it is stable, and for each rule $f(x_1, \cdots, x_n) \approx N$, each $x_i$ contains no defined function symbols. We say that an equation $M \approx N$ is \emph{$Q$-normal} (where $Q$ is some TRS) iff $N$ is in $Q$-normal form. A TRS is $Q$-normal iff all of its rules are $Q$-normal.  
+An equation $M \approx N$ is \emph{stable} iff $M$ is headed by a defined function symbol. A TRS is stable iff all of its equations are stable. A TRS is a \emph{functional program} iff it is stable, and for each rule $f(x_1, \cdots, x_n) \approx N$, each $x_i$ contains no defined function symbols. We say that an equation $M \approx N$ is \emph{$Q$-normal} (where $Q$ is some TRS) iff $N$ is in $Q$-normal form. A TRS is $Q$-normal iff all of its rules are $Q$-normal. 
+
+
+A TRS $\rightarrow$ also defines \emph{innermost} and \emph{outermostreduction systems} $\overset{i}{\rightarrow}$ and $\overset{o}{\rightarrow}$. Consider some term $M$ that is a redux of $\rightarrow$. In an innermost reduction sequence, we ...
 \\~\\
 A strict \emph{reduction order} $\succ ~ \subseteq T(\Sigma, V)^2$ is an order on terms that is closed under substitutions.  $\succsim$ is defined to be the reflexive closure of $\succ$. A reduction order is also \emph{monotonic} iff it is closed under contexts. $\succ$ is \emph{well-founded} iff every set $K \subseteq T(\Sigma, V)$ has a minimum under $\succ$ (i.e. $\forall K \subseteq T(\Sigma, V), \exists x \in K, \forall y \in K, x \precsim y$).
 
@@ -79,12 +82,27 @@ One particular ordering that will be of use is the subterm ordering $\subterm$, 
 We introduce a definition of program termination inspired by the dependency pair framework which we prove to be a slight generalisation of \emph{size-change termination} \cite{lee2001sizechange,thiemann2005sizechange}.
 
 \begin{definition}[Flat termination]
-    Consider some TRS $P \in T(\Sigma_{def} \cup \Sigma{con}, V)^2$. We define its \emph{flattening} $P^\flat$ as follows:
+    Consider some term $x \in T(\Sigma_{def} \cup \Sigma_{con}, V)$, and assume the existence of an infinite list of free variables $V^\flat$. We define $x$'s \emph{flattening} $x^\flat$ as follows:
+    \begin{itemize}
+        \item If $x \in \Sigma_{con}$, then $x^\flat := x$.
+        \item If $x = f(x_1, \cdots, x_n)$ for some $f \in \Sigma_{con}$, then $x^\flat := f(x^\flat_1, \cdots, x_n)$ 
+        \item If $x = f(x_1, \cdots, x_n)$ for some $f \in \Sigma_{def}$, or if $x \in V$, then $x^\flat := v^\flat$, where $v^\flat$ is some unused variable in $V^\flat$. 
+    \end{itemize}
+    Now consider some TRS $P \in T(\Sigma_{def} \cup \Sigma_{con}, V)^2$. We define its \emph{flattening} $P^\flat$ as follows:
     \begin{equation*}
         P^\flat := \{ f(s_1, \cdots, s_n) \approx g(t_1^\flat, \cdots, t_n^\flat) ~|~ f(s_1, \cdots, s_n) \approx C[g(t_1, \cdots, t_n)] \in P \}
     \end{equation*}
-    $P$ is said to be \emph{flat-terminating} iff $P^\flat$ is innermost terminating.
+    $P$ is said to be \emph{flat terminating} iff $P^\flat$ is innermost terminating.
 \end{definition}
+
+\begin{theorem}
+    Consider some TRS $P$. If $P$ is size-change terminating with respect to the subterm ordering $\subterm$, then it is also flat terminating.
+\end{theorem}
+\begin{proof}
+    
+\end{proof}
+
+
 
 
 \renewcommand\em{\it}
