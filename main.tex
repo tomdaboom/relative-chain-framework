@@ -55,7 +55,7 @@ We consider the setting of term rewriting systems over a \emph{signature} $T(\Si
 
 $T(\Sigma, V)$ is defined inductively as follows: \begin{enumerate}
     \item $\Sigma^{(0)} \subseteq T(\Sigma, V)$ and $V \subseteq T(\Sigma, V)$. 
-    \item If $f \in \Sigma^{(n)}$, and $M_i \in T(\Sigma, V)$ for each $i \in [n]$, then $f(M_1, \cdots, M_n) \in T(\Sigma, V)$. 
+    \item If $f \in \Sigma^{(n)}$, and $M_i \in T(\Sigma, V)$ for each $i \in [m], m \leq n$, then $f ~ M_1 ~ \cdots ~ M_m \in T(\Sigma, V)$. 
 \end{enumerate}
 
 The recursive structure of $T(\Sigma, V)$ prompts us to think of terms in a TRS as \emph{syntax trees}. We define $Pos(M) \subseteq \mathbb{N}^*$ for each $M \in T(\Sigma, V)$ to be the set of positions in $M$'s syntax tree. The root of the tree has position $\varepsilon$, and the $i$th child of a node at position $p$ has position $pi$. $M|_p$ is the subterm of $M$ rooted at position $p$, and $M[N]_p$ denotes $M$ with its term at position $p$ replaced by $N \in T(\Sigma, V)$. Additionally, we define $Var(M) \subseteq V$ to be the set of variables appearing in a term. $M$ is \emph{closed} iff $Var(M) = \emptyset$. 
@@ -79,27 +79,53 @@ One particular ordering that will be of use is the subterm ordering $\subterm$, 
 
 \section{Flat Termination}
 
-We introduce a definition of program termination inspired by the dependency pair framework which we prove to be a slight generalisation of \emph{size-change termination} \cite{lee2001sizechange,thiemann2005sizechange}.
+We introduce a definition of program termination inspired by the dependency pair framework which we prove to be a generalisation of \emph{size-change termination} \cite{lee2001sizechange,thiemann2005sizechange}.
 
 \begin{definition}[Flat termination]
     Consider some term $x \in T(\Sigma_{def} \cup \Sigma_{con}, V)$, and assume the existence of an infinite list of free variables $V^\flat$. We define $x$'s \emph{flattening} $x^\flat$ as follows:
     \begin{itemize}
         \item If $x \in \Sigma_{con}$, then $x^\flat := x$.
-        \item If $x = f(x_1, \cdots, x_n)$ for some $f \in \Sigma_{con}$, then $x^\flat := f(x^\flat_1, \cdots, x_n)$ 
-        \item If $x = f(x_1, \cdots, x_n)$ for some $f \in \Sigma_{def}$, or if $x \in V$, then $x^\flat := v^\flat$, where $v^\flat$ is some unused variable in $V^\flat$. 
+        \item If $x = f ~ x_1 ~ \cdots ~ x_n$ for some $f \in \Sigma_{con}$, then $x^\flat := f ~ x^\flat_1 ~ \cdots ~ x_n$ 
+        \item If $x = f ~ x_1 ~ \cdots ~ x_n$ for some $f \in \Sigma_{def}$, or if $x \in V$, then $x^\flat := v^\flat$, where $v^\flat$ is the next unused variable in $V^\flat$. 
     \end{itemize}
     Now consider some TRS $P \in T(\Sigma_{def} \cup \Sigma_{con}, V)^2$. We define its \emph{flattening} $P^\flat$ as follows:
     \begin{equation*}
-        P^\flat := \{ f(s_1, \cdots, s_n) \approx g(t_1^\flat, \cdots, t_n^\flat) ~|~ f(s_1, \cdots, s_n) \approx C[g(t_1, \cdots, t_n)] \in P \}
+        P^\flat := \{ f ~ s_1 ~ \cdots ~ s_n \approx g ~ t_1^\flat ~ \cdots ~ t_n^\flat ~|~ f ~ s_1 ~ \cdots ~ s_n \approx C[g ~ t_1 ~ \cdots ~ t_n] \in P \}
     \end{equation*}
-    $P$ is said to be \emph{flat terminating} iff $P^\flat$ is innermost terminating.
+    %$P$ is said to be \emph{flat terminating} iff $P^\flat$ is terminating.
 \end{definition}
 
+\begin{lemma}
+    For any functional program $P$, if $P^\flat$ is terminating, then $P$ is terminating.
+\end{lemma}
+\begin{proof}
+    Consider some infinite reduction sequence $t_1 \rightarrow_P t_2 \rightarrow_P \cdots$. Each term in this sequence must be some instance of the LHS of a rule in $P$. Hence, our sequence is of the form $C[f_1 ~ a_1] \rightarrow_P C[f_2 ~ a_2] \rightarrow_P \cdots$. 
+\end{proof}
+
+\begin{definition}[Size-change termination \cite{lee2001sizechange,thiemann2005sizechange}]
+    Consider some functional program $P \subseteq T(\Sigma_{con} \cup \Sigma_{def}, V)^2$. For each rule $f ~ s_1 ~ \cdots ~ s_n \approx N$, and for each function symbol $g$ such that $N = C[g ~ t_1 ~ \cdots ~ t_m)]$ for some context $C$, we define a directed bipartite \emph{size-change graph} $G_f^g := (L, R, E)$ with respect to some ordering on constructor terms $\succ ~ \subseteq T(\Sigma_{con}, V)^2$.
+
+    $G_f^g$ contains a vertex for each argument of $f$ and $g$ (i.e. $L = \{1_f, \cdots, n_f\}$ and $R = \{1_g, \cdots, m_g\}$). Each of $G_f^g$'s directed edges $e \in L \times R \times \{\succ, \succsim\}$ is labelled either with $\succ$ or $\succsim$. For each pair of arguments $s_i$ and $t_j$, if $s_i \succ t_j$, we have $(i_f, j_g, \succ) \in E$. Otherwise, if $s_i \succsim t_j$, we have $(i_f, j_g, \succsim) \in E$.
+
+    We define the concatenation of two size-change graphs $G_f^g \circ G_g^h$ to be the graph obtained by unifying all of $G_f^g$'s input vertices with all of $G_g^h$'s output vertices.
+
+   $P$ is defined to be \emph{size-change terminating} iff some infinite path of every concatenation of an infinite sequence of size-change graphs contains infinitely many edges labelled $\succ$.
+\end{definition}
+Observe that, like flat termination, this formalism of size-change termination is also stronger than termination. If a program is size-change terminating, then any possible infinite reduction sequence infinitely decrements some closed constructor term with respect to $\succ$, which violates $\succ$'s well-foundedness.
+
+Also observe that this formalism ensures that any two functional programs $P$ and $P^\flat$ must have the same set of size-change graphs. Hence, $P$ is size-change terminating iff $P^\flat$ is also size-change terminating.
+
+
+
+% \begin{lemma} \label{thm:size_change_max_multi}
+%     A program $P$ is size-change terminating iff any maximal multigraph contains an edge labelled $\succ$.
+% \end{lemma}
+
 \begin{theorem}
-    Consider some TRS $P$. If $P$ is size-change terminating with respect to the subterm ordering $\subterm$, then it is also flat terminating.
+    Consider some functional program $P$. If $P$ is size-change terminating with respect to $\succ$, $P^\flat$ is also size-change terminating with respect to $\succ$.
 \end{theorem}
 \begin{proof}
-    
+    Assume that $P$ is size-change terminating. Then in any call sequence of the form $G := (G_1^2 \circ G_2^3 \circ \cdots \circ G_{l-1}^1)^*$ contains an edge labelled $\succ$. Observe that this call sequences corresponds to some sequence of rules in $P^\flat$.  
 \end{proof}
 
 
