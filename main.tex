@@ -7,6 +7,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
+\usepackage{mathtools}
 
 \newtheorem{theorem}{Theorem}%[section]
 \newtheorem{lemma}[theorem]{Lemma}
@@ -60,73 +61,56 @@ $T(\Sigma, V)$ is defined inductively as follows: \begin{enumerate}
 
 The recursive structure of $T(\Sigma, V)$ prompts us to think of terms in a TRS as \emph{syntax trees}. We define $Pos(M) \subseteq \mathbb{N}^*$ for each $M \in T(\Sigma, V)$ to be the set of positions in $M$'s syntax tree. The root of the tree has position $\varepsilon$, and the $i$th child of a node at position $p$ has position $pi$. $M|_p$ is the subterm of $M$ rooted at position $p$, and $M[N]_p$ denotes $M$ with its term at position $p$ replaced by $N \in T(\Sigma, V)$. Additionally, we define $Var(M) \subseteq V$ to be the set of variables appearing in a term. $M$ is \emph{closed} iff $Var(M) = \emptyset$. 
 
-A \emph{(one-hole) context} $C[\cdot] : T(\Sigma, V) \rightarrow T(\Sigma, V)$ is a term with a hole $\square$ at some position. $C[M]$ denotes the context $C[\cdot]$ with its hole replaced by the term $M$. 
+A \emph{(one-hole) context} $C[\cdot] : T(\Sigma, V) \longrightarrow T(\Sigma, V)$ is a term with a hole $\square$ at some position. $C[M]$ denotes the context $C[\cdot]$ with its hole replaced by the term $M$. 
 
-A \emph{substitution} $\theta : X \rightarrow T(\Sigma, V)$ is a function mapping variables to terms, for which the set $\text{dom}(\theta) := \{ x \in V ~|~ \theta(x) \neq x\}$ is finite. Hence, we may write $\theta = [x_1 \mapsto M_1, x_2 \mapsto M_2, \cdots]$ for finitely many $x_i \in V$ and $M_i \in T(\Sigma,V)$. $M \theta$ denotes the term $M$ with each variable replaced by its $\theta$-image, and we call $M\theta$ an \emph{instance} of $M$. For two substitutions $\theta, \sigma$, we say that $\sigma$ is \emph{less general} than $\theta$ (and write $\sigma \leq \theta$) iff there exists some other substitution $\theta'$ such that $\sigma = \theta' \circ \theta$.
+A \emph{substitution} $\theta : X \longrightarrow T(\Sigma, V)$ is a function mapping variables to terms, for which the set $\text{dom}(\theta) := \{ x \in V ~|~ \theta(x) \neq x\}$ is finite. Hence, we may write $\theta = [x_1 \mapsto M_1, x_2 \mapsto M_2, \cdots]$ for finitely many $x_i \in V$ and $M_i \in T(\Sigma,V)$. $M \theta$ denotes the term $M$ with each variable replaced by its $\theta$-image, and we call $M\theta$ an \emph{instance} of $M$. For two substitutions $\theta, \sigma$, we say that $\sigma$ is \emph{less general} than $\theta$ (and write $\sigma \leq \theta$) iff there exists some other substitution $\theta'$ such that $\sigma = \theta' \circ \theta$.
 \\~\\
-A reduction system $(X, \rightarrow)$ consists of a set $X$ equipped with a binary relation $\rightarrow ~\subseteq X \times X$. A reduction is \emph{terminating} iff there exist no infinite sequences $x_1x_2 \cdots \in X^\omega$ with $x_1 \rightarrow x_2 \rightarrow \cdots$. $x \in X$ is a \emph{redux} of $\rightarrow$ iff $x \rightarrow y$ for some $y \in X$. If $x$ is not a redux, we say that it is in \emph{$\rightarrow$-normal form}. A reduction system over $T(\Sigma, V)$ is a \emph{term rewrite system (TRS)} iff it is closed under contexts and substitutions (i.e. if $M \rightarrow N$, then $C[M\theta] \rightarrow C[N\theta]$ for all contexts $C[\cdot]$ and substitutions $\theta$). 
+A reduction system $(X, \longrightarrow)$ consists of a set $X$ equipped with a binary relation $\longrightarrow ~\subseteq X \times X$. A reduction is \emph{terminating} iff there exist no infinite sequences $x_1x_2 \cdots \in X^\omega$ with $x_1 \longrightarrow x_2 \longrightarrow \cdots$. $x \in X$ is a \emph{redux} of $\longrightarrow$ iff $x \longrightarrow y$ for some $y \in X$. If $x$ is not a redux, we say that it is in \emph{$\longrightarrow$-normal form}. A reduction system over $T(\Sigma, V)$ is a \emph{term rewrite system (TRS)} iff it is closed under contexts and substitutions (i.e. if $M \longrightarrow N$, then $C[M\theta] \longrightarrow C[N\theta]$ for all contexts $C[\cdot]$ and substitutions $\theta$). 
 
-Here, we will consider TRSs defined by a set of equations $R \subseteq T(\Sigma, V) \times T(\Sigma, V)$. Note that our equations are presumed to be \emph{oriented}, meaning that $M \approx N \in R$ does not imply that $N \approx M \in R$. We also assume that $Var(M) \supseteq Var(N)$ for each $M \approx N \in R$. We define $\rightarrow_R$ such that, for each $M \approx N \in R$, and for all contexts $C[\cdot]$ and substitutions $\theta$, $C[M\theta] \rightarrow_R C[N\theta]$. 
+Here, we will consider TRSs defined by a set of equations $R \subseteq T(\Sigma, V) \times T(\Sigma, V)$. Note that our equations are presumed to be \emph{oriented}, meaning that $M \approx N \in R$ does not imply that $N \approx M \in R$. We also assume that $Var(M) \supseteq Var(N)$ for each $M \approx N \in R$. We define $\longrightarrow_R$ such that, for each $M \approx N \in R$, and for all contexts $C[\cdot]$ and substitutions $\theta$, $C[M\theta] \longrightarrow_R C[N\theta]$. 
 
 An equation $M \approx N$ is \emph{stable} iff $M$ is headed by a defined function symbol. A TRS is stable iff all of its equations are stable. A TRS is a \emph{functional program} iff it is stable, and for each rule $f(x_1, \cdots, x_n) \approx N$, each $x_i$ contains no defined function symbols. We say that an equation $M \approx N$ is \emph{$Q$-normal} (where $Q$ is some TRS) iff $N$ is in $Q$-normal form. A TRS is $Q$-normal iff all of its rules are $Q$-normal. 
 
 
-A TRS $\rightarrow$ also defines \emph{innermost} and \emph{outermostreduction systems} $\overset{i}{\rightarrow}$ and $\overset{o}{\rightarrow}$. Consider some term $M$ that is a redux of $\rightarrow$. In an innermost reduction sequence, we ...
+A TRS $\longrightarrow$ also defines \emph{innermost} and \emph{outermostreduction systems} $\prescript{}{i}{\longrightarrow}$ and $\prescript{}{o}{\longrightarrow}$. Consider some term $M$ that is a redux of $\longrightarrow$. In an innermost reduction sequence, we ...
 \\~\\
-A strict \emph{reduction order} $\succ ~ \subseteq T(\Sigma, V)^2$ is an order on terms that is closed under substitutions.  $\succsim$ is defined to be the reflexive closure of $\succ$. A reduction order is also \emph{monotonic} iff it is closed under contexts. $\succ$ is \emph{well-founded} iff every set $K \subseteq T(\Sigma, V)$ has a minimum under $\succ$ (i.e. $\forall K \subseteq T(\Sigma, V), \exists x \in K, \forall y \in K, x \precsim y$).
+A strict \emph{reduction order} $\succ ~ \subseteq T(\Sigma, V)^2$ is an order on terms that is closed under substitutions.  $\succeq$ is defined to be the reflexive closure of $\succ$. A reduction order is also \emph{monotonic} iff it is closed under contexts. $\succ$ is \emph{well-founded} iff every set $K \subseteq T(\Sigma, V)$ has a minimum under $\succ$ (i.e. $\forall K \subseteq T(\Sigma, V), \exists x \in K, \forall y \in K, x \preceq y$).
 
-One particular ordering that will be of use is the subterm ordering $\subterm$, which is defined as follows: $M \subterm N$ iff $N|_p = M$ for some $p \in Pos(N)$.
+One particular ordering that will be of use is the subterm ordering over closed constructors $\subterm ~\subseteq T(\Sigma_{con}, \emptyset)^2$, which is defined as follows: $M \subterm N$ iff $N|_p = M$ for some $p \in Pos(N)$. Trivially, this is a monotonic reduction order (in fact, it is a monotonic reduction order when taken over any ). 
 
-\section{Flat Termination}
+\section{Program-Hypothesis Pairs}
 
-We introduce a definition of program termination inspired by the dependency pair framework which we prove to be a generalisation of \emph{size-change termination} \cite{lee2001sizechange,thiemann2005sizechange}.
-
-\begin{definition}[Flat termination]
-    Consider some term $x \in T(\Sigma_{def} \cup \Sigma_{con}, V)$, and assume the existence of an infinite list of free variables $V^\flat$. We define $x$'s \emph{flattening} $x^\flat$ as follows:
-    \begin{itemize}
-        \item If $x \in \Sigma_{con}$, then $x^\flat := x$.
-        \item If $x = f ~ x_1 ~ \cdots ~ x_n$ for some $f \in \Sigma_{con}$, then $x^\flat := f ~ x^\flat_1 ~ \cdots ~ x_n$ 
-        \item If $x = f ~ x_1 ~ \cdots ~ x_n$ for some $f \in \Sigma_{def}$, or if $x \in V$, then $x^\flat := v^\flat$, where $v^\flat$ is the next unused variable in $V^\flat$. 
-    \end{itemize}
-    Now consider some TRS $P \in T(\Sigma_{def} \cup \Sigma_{con}, V)^2$. We define its \emph{flattening} $P^\flat$ as follows:
-    \begin{equation*}
-        P^\flat := \{ f ~ s_1 ~ \cdots ~ s_n \approx g ~ t_1^\flat ~ \cdots ~ t_n^\flat ~|~ f ~ s_1 ~ \cdots ~ s_n \approx C[g ~ t_1 ~ \cdots ~ t_n] \in P \}
-    \end{equation*}
-    %$P$ is said to be \emph{flat terminating} iff $P^\flat$ is terminating.
-\end{definition}
-
-\begin{lemma}
-    For any functional program $P$, if $P^\flat$ is terminating, then $P$ is terminating.
-\end{lemma}
-\begin{proof}
-    Consider some infinite reduction sequence $t_1 \rightarrow_P t_2 \rightarrow_P \cdots$. Each term in this sequence must be some instance of the LHS of a rule in $P$. Hence, our sequence is of the form $C[f_1 ~ a_1] \rightarrow_P C[f_2 ~ a_2] \rightarrow_P \cdots$. 
-\end{proof}
+\section{Modular Termination via Size-Change Termination}
 
 \begin{definition}[Size-change termination \cite{lee2001sizechange,thiemann2005sizechange}]
-    Consider some functional program $P \subseteq T(\Sigma_{con} \cup \Sigma_{def}, V)^2$. For each rule $f ~ s_1 ~ \cdots ~ s_n \approx N$, and for each function symbol $g$ such that $N = C[g ~ t_1 ~ \cdots ~ t_m)]$ for some context $C$, we define a directed bipartite \emph{size-change graph} $G_f^g := (L, R, E)$ with respect to some ordering on constructor terms $\succ ~ \subseteq T(\Sigma_{con}, V)^2$.
+    Consider some functional program $P \subseteq T(\Sigma_{con} \cup \Sigma_{def}, V)^2$. For each rule $f ~ s_1 ~ \cdots ~ s_n \approx N$, and for each function symbol $g$ such that $N = C[g ~ t_1 ~ \cdots ~ t_m)]$ for some context $C$, we define a directed bipartite \emph{size-change graph} $G_f^g := (L, R, E)$ with respect to some well-founded ordering on closed constructor terms $\succ ~ \subseteq T(\Sigma_{con}, \emptyset)^2$.
 
-    $G_f^g$ contains a vertex for each argument of $f$ and $g$ (i.e. $L = \{1_f, \cdots, n_f\}$ and $R = \{1_g, \cdots, m_g\}$). Each of $G_f^g$'s directed edges $e \in L \times R \times \{\succ, \succsim\}$ is labelled either with $\succ$ or $\succsim$. For each pair of arguments $s_i$ and $t_j$, if $s_i \succ t_j$, we have $(i_f, j_g, \succ) \in E$. Otherwise, if $s_i \succsim t_j$, we have $(i_f, j_g, \succsim) \in E$.
+    $G_f^g$ contains a vertex for each argument of $f$ and $g$ (i.e. $L = \{1_f, \cdots, n_f\}$ and $R = \{1_g, \cdots, m_g\}$). Each of $G_f^g$'s directed edges $e \in L \times R \times \{\succ, \succeq\}$ is labelled either with $\succ$ or $\succeq$. For each pair of arguments $s_i$ and $t_j$, if $s_i \succ t_j$, we have $(i_f, j_g, \succ) \in E$. Otherwise, if $s_i \succeq t_j$, we have $(i_f, j_g, \succeq) \in E$.
 
-    We define the concatenation of two size-change graphs $G_f^g \circ G_g^h$ to be the graph obtained by unifying all of $G_f^g$'s input vertices with all of $G_g^h$'s output vertices.
+    We define the concatenation of multiple size-change graphs corresponding to subsequent function calls $G_f^g \circ G_g^h \circ G_h^i \circ \cdots$. .
 
    $P$ is defined to be \emph{size-change terminating} iff some infinite path of every concatenation of an infinite sequence of size-change graphs contains infinitely many edges labelled $\succ$.
 \end{definition}
-Observe that, like flat termination, this formalism of size-change termination is also stronger than termination. If a program is size-change terminating, then any possible infinite reduction sequence infinitely decrements some closed constructor term with respect to $\succ$, which violates $\succ$'s well-foundedness.
+Observe that this formalism of size-change termination is stronger than termination. If a program is size-change terminating, then any possible infinite reduction sequence infinitely decrements some constructor term with respect to $\succ$, which violates $\succ$'s well-foundedness.
 
-Also observe that this formalism ensures that any two functional programs $P$ and $P^\flat$ must have the same set of size-change graphs. Hence, $P$ is size-change terminating iff $P^\flat$ is also size-change terminating.
+\begin{theorem}
+    Let $P$ be a functional program that is size-change terminating with respect to $\supterm$, and let $H$ be a $P$-normal, closed and terminating hypothesis set disjoint from $P$. Then $P \cup Q$ is innermost terminating. 
+\end{theorem}
+\begin{proof}
+    Define $\longrightarrow ~:=~ \longrightarrow_{P \cup Q}$, and for the sake of contradiction, consider some infinite innermost reduction sequence of $P \cup Q$ starting from some term $s$. Assume without loss of generality that $s ~ \longrightarrow^*_i ~ t$, where all the subterms of $t$ are in normal form (i.e. $s$ is a \textit{minimally} non-innnermost terminating term). Via our assumptions, we know that $t$ must match the left-hand side of some rule in $H$ or of some rule in $P$.
+    \\~\\
+    In the first case, there must be some rule $t \approx u \in H$. Via our assumptions of $P$-normality and closure, $u\sigma$ must be in $P$-normal form for all substitutions $\sigma$. Hence, there is no rule in $P$ that matches $u$. It follows that, if $t$ is non-innermost terminating, we can produce an infinite reduction sequence in $H$, which violates $H$'s termination, thus producing a contradiction.
+    \\~\\
+    In the second case, we must have $t = (f ~ a_1 ~ \cdots ~ a_n)\sigma$ for some rule $f ~ a_1 ~ \cdots ~ a_n \approx u \in P$ and substitution $\sigma$. We also know that $u\sigma$ is non-innermost terminating. Via our previous case, $u$ cannot match the left-hand side of a hypothesis. This means that $u\sigma = C[g_1 ~ b_1 ~ \cdots ~ b_m]$ for some $g \in \Sigma_{def}$ and context $C[]$, where $g_1 ~ b_1 ~ \cdots ~ b_m$ is non-innermost terminating with all of its subterms in normal form. 
+    
+    We now have two more cases: the call to $g_1$ is inserted into $u$ by $\sigma$, or it appears directly in $u$. In the first case, we can deduce that the call to $g$ must also appear in $t$ (note that $Var(f ~ a_1 ~ \cdots ~ a_n) \supseteq Var(u)$), which means that $t$ has a subterm that is not in normal form. This violates our assumptions about the structure of $t$; therefore, the call to $g_1$ must appear in $u$.
 
-
+    Observe that, because it is a minimally nonterminating subterm, we can now apply the same argument to the term $(g_1 ~ b_1 ~ \cdots ~ b_n)\sigma$, yielding an infinite sequence of function calls $g_1 g_2 g_3 \cdots$, where each $g_{i+1}$ appears on the right-hand side of a definition headed by $g_i$. This yields an infinite sequence of size-change graphs $\{G_i^{i+1}\}_{i \in \mathbb{N}}$. Via size-change termination, their concatenation $G_1^2 \circ G_2^3 \circ \cdots$ must contain some path that traverses infinitely many edges labelled $\supterm$. But if such a call sequence were possible, it would induce an infinite sequence of closed constructor terms that decrease under $\supterm$, which violates $\supterm$'s well-foundedness. We have arrived at another contradiction; therefore, no infinite reduction sequence exists in $P \cup H$.
+\end{proof}
 
 % \begin{lemma} \label{thm:size_change_max_multi}
 %     A program $P$ is size-change terminating iff any maximal multigraph contains an edge labelled $\succ$.
 % \end{lemma}
-
-\begin{theorem}
-    Consider some functional program $P$. If $P$ is size-change terminating with respect to $\succ$, $P^\flat$ is also size-change terminating with respect to $\succ$.
-\end{theorem}
-\begin{proof}
-    Assume that $P$ is size-change terminating. Then in any call sequence of the form $G := (G_1^2 \circ G_2^3 \circ \cdots \circ G_{l-1}^1)^*$ contains an edge labelled $\succ$. Observe that this call sequences corresponds to some sequence of rules in $P^\flat$.  
-\end{proof}
 
 
 
